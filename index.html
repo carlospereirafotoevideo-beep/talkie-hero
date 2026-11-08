@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>TalkieHero: Missões em Inglês</title>
+  <title>TalkieHero: Missões em Inglês 2.0</title>
   
   <meta name="theme-color" content="#f59e0b">
   <meta name="mobile-web-app-capable" content="yes">
@@ -24,99 +24,125 @@
       0% { opacity: 0; transform: scale(0.85); }
       100% { opacity: 1; transform: scale(1); }
     }
-    .animate-bounce-slow {
-      animation: bounce-slow 2.5s infinite ease-in-out;
+    @keyframes level-up-glow {
+      0%, 100% { transform: scale(1); filter: drop-shadow(0 0 15px rgba(251, 191, 36, 0.8)); }
+      50% { transform: scale(1.05); filter: drop-shadow(0 0 25px rgba(245, 158, 11, 1)); }
     }
-    .listening-pulse {
-      animation: pulse-ring 1.5s infinite;
-    }
-    .pop-in {
-      animation: pop-in 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
-    }
-    ::-webkit-scrollbar {
-      width: 4px;
-      height: 4px;
-    }
-    ::-webkit-scrollbar-thumb {
-      background: #cbd5e1;
-      border-radius: 4px;
-    }
+    .animate-bounce-slow { animation: bounce-slow 2.5s infinite ease-in-out; }
+    .listening-pulse { animation: pulse-ring 1.5s infinite; }
+    .pop-in { animation: pop-in 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards; }
+    .level-up-anim { animation: level-up-glow 1.2s infinite ease-in-out; }
+    ::-webkit-scrollbar { width: 4px; height: 4px; }
+    ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
   </style>
 </head>
 <body class="bg-slate-100 text-slate-800 font-sans antialiased select-none min-h-screen flex justify-center items-center p-0 sm:p-4">
 
   <!-- Mobile Device Frame Container -->
-  <div id="app" class="w-full max-w-md bg-white sm:rounded-3xl shadow-2xl flex flex-col min-h-screen sm:min-h-[780px] sm:max-h-[860px] overflow-hidden border border-slate-200 relative">
+  <div id="app" class="w-full max-w-md bg-white sm:rounded-3xl shadow-2xl flex flex-col min-h-screen sm:min-h-[820px] sm:max-h-[880px] overflow-hidden border border-slate-200 relative">
     
-    <!-- Top Status Bar -->
-    <header class="bg-gradient-to-r from-amber-400 via-orange-400 to-amber-500 px-4 py-3 text-white flex justify-between items-center shadow-md z-10">
-      <div class="flex items-center gap-2">
-        <button id="btn-back-home" onclick="goHome()" class="p-1.5 bg-white/20 hover:bg-white/30 rounded-xl transition active:scale-95 text-sm font-bold flex items-center gap-1">
-          <span>🏠</span>
-        </button>
-        <span class="font-black tracking-wide text-base drop-shadow-sm flex items-center gap-1">
-          <span>TalkieHero</span>
-        </span>
+    <!-- Top Player Status Bar (Persistent Progression: Level, XP, Stars, Streaks) -->
+    <header class="bg-gradient-to-r from-amber-400 via-orange-400 to-amber-500 px-3.5 py-2.5 text-white flex flex-col gap-1.5 shadow-md z-10">
+      
+      <!-- Top Row: Navigation, Player Title & Settings -->
+      <div class="flex justify-between items-center">
+        <div class="flex items-center gap-2">
+          <button id="btn-back-home" onclick="goHome()" class="p-1.5 bg-white/20 hover:bg-white/30 rounded-xl transition active:scale-95 text-sm font-bold flex items-center">
+            <span>🏠</span>
+          </button>
+          <div>
+            <div class="flex items-center gap-1.5">
+              <span id="player-rank-badge" class="bg-white/25 text-[10px] uppercase font-black px-2 py-0.5 rounded-full">Nível 1</span>
+              <span id="player-title" class="font-black tracking-wide text-xs drop-shadow-sm">Aprendiz Curioso</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="flex items-center gap-2 text-xs font-black">
+          <div class="flex items-center gap-1 bg-white/25 px-2.5 py-1 rounded-full backdrop-blur-sm" title="Total de Estrelas">
+            <span>⭐</span>
+            <span id="star-count">0</span>
+          </div>
+          <button onclick="openTrophiesModal()" class="bg-white/25 hover:bg-white/35 px-2.5 py-1 rounded-full backdrop-blur-sm transition flex items-center gap-1" title="Sala de Troféus">
+            <span>🏆</span>
+            <span id="trophy-count">0/12</span>
+          </button>
+          <button onclick="toggleAudioSpeed()" id="btn-speed" class="bg-white text-orange-600 px-2.5 py-1 rounded-full shadow font-extrabold flex items-center gap-1 hover:bg-amber-50 transition active:scale-95" title="Velocidade da voz">
+            <span>🐰</span> <span id="speed-label">1x</span>
+          </button>
+        </div>
       </div>
 
-      <div class="flex items-center gap-3 text-xs font-black">
-        <div class="flex items-center gap-1 bg-white/25 px-2.5 py-1 rounded-full backdrop-blur-sm">
-          <span>⭐</span>
-          <span id="star-count">0</span>
+      <!-- Bottom Row: XP Progress Bar -->
+      <div class="flex items-center gap-2 pt-0.5">
+        <span class="text-[10px] font-black uppercase text-amber-100 tracking-wider">XP</span>
+        <div class="flex-1 bg-black/20 h-2.5 rounded-full overflow-hidden p-0.5">
+          <div id="player-xp-bar" class="bg-gradient-to-r from-emerald-300 to-green-400 h-full rounded-full transition-all duration-500" style="width: 10%;"></div>
         </div>
-        <div class="flex items-center gap-1 bg-white/25 px-2.5 py-1 rounded-full backdrop-blur-sm">
-          <span>🔥</span>
-          <span id="streak-count">1</span> dia
-        </div>
-        <button onclick="toggleAudioSpeed()" id="btn-speed" class="bg-white text-orange-600 px-2.5 py-1 rounded-full shadow font-extrabold flex items-center gap-1 hover:bg-amber-50 transition active:scale-95" title="Velocidade da voz">
-          <span>🐰</span> <span id="speed-label">Normal</span>
-        </button>
+        <span id="player-xp-text" class="text-[10px] font-extrabold text-white">0 / 100</span>
       </div>
+
     </header>
 
     <!-- MAIN VIEW CONTAINER -->
     <main class="flex-1 flex flex-col overflow-y-auto relative bg-slate-50">
       
-      <!-- SCREEN 1: HOME -->
-      <section id="screen-home" class="p-5 flex flex-col gap-4">
-        <div class="bg-gradient-to-br from-indigo-500 to-purple-600 rounded-2xl p-4 text-white shadow-lg flex items-center justify-between">
-          <div>
-            <span class="bg-white/20 text-xs font-black px-2.5 py-0.5 rounded-full uppercase tracking-wider">Missões de Conversa</span>
-            <h2 class="text-xl font-black mt-1">Pronto para falar inglês? 🚀</h2>
-            <p class="text-indigo-100 text-xs mt-1">Escolha uma aventura e converse com novos amigos!</p>
+      <!-- SCREEN 1: ADVENTURE MAP & WORLDS (HOME) -->
+      <section id="screen-home" class="p-4 flex flex-col gap-4">
+        
+        <!-- Daily Quest Banner -->
+        <div class="bg-gradient-to-br from-indigo-600 via-indigo-700 to-purple-700 rounded-2xl p-4 text-white shadow-lg relative overflow-hidden">
+          <div class="absolute -right-4 -bottom-4 text-7xl opacity-20 select-none">🎯</div>
+          <div class="flex justify-between items-start">
+            <span class="bg-amber-400 text-amber-950 text-[10px] font-black px-2.5 py-0.5 rounded-full uppercase tracking-wider">
+              ⚡ Missão do Dia (+100 XP)
+            </span>
+            <span class="text-xs font-bold text-indigo-200" id="daily-date-label">Hoje</span>
           </div>
-          <div class="text-5xl animate-bounce-slow">🦊</div>
-        </div>
-
-        <div class="bg-white p-3 rounded-xl border border-slate-200 shadow-sm flex items-center justify-between text-xs text-slate-600">
-          <div class="flex items-center gap-2">
-            <span>🗣️</span>
-            <span>Traduzir frases em português:</span>
-          </div>
-          <button id="toggle-translation-btn" onclick="toggleTranslationGlobal()" class="bg-emerald-500 text-white font-bold px-3 py-1 rounded-full text-xs transition">
-            Ligado
+          <h2 class="text-lg font-black mt-1.5" id="daily-quest-title">Desafio: Bate-papo Rápido!</h2>
+          <p class="text-indigo-100 text-xs mt-0.5" id="daily-quest-desc">Converse com Toby e ganhe bônus especial de evolução.</p>
+          
+          <button onclick="startDailyChallenge()" class="mt-3 bg-gradient-to-r from-amber-400 to-amber-500 hover:from-amber-300 hover:to-amber-400 text-slate-900 font-black text-xs py-2 px-4 rounded-xl shadow transition active:scale-95 flex items-center gap-1.5">
+            <span>🎮</span> Jogar Missão Diária
           </button>
         </div>
 
-        <h3 class="text-sm font-extrabold text-slate-700 uppercase tracking-wider mt-2 flex items-center gap-1.5">
-          <span>🗺️</span> Escolha sua Missão
-        </h3>
+        <!-- World Tabs -->
+        <div class="flex bg-slate-200/80 p-1 rounded-2xl gap-1 text-xs font-extrabold">
+          <button onclick="selectWorld(1)" id="tab-world-1" class="flex-1 py-2 rounded-xl transition text-center bg-white shadow-sm text-indigo-600">
+            🌱 Mundo 1<br><span class="text-[10px] font-semibold text-slate-500">Dia a Dia</span>
+          </button>
+          <button onclick="selectWorld(2)" id="tab-world-2" class="flex-1 py-2 rounded-xl transition text-center text-slate-600 hover:bg-white/50">
+            🏙️ Mundo 2<br><span class="text-[10px] font-semibold text-slate-500">Na Cidade</span>
+          </button>
+          <button onclick="selectWorld(3)" id="tab-world-3" class="flex-1 py-2 rounded-xl transition text-center text-slate-600 hover:bg-white/50">
+            🏰 Mundo 3<br><span class="text-[10px] font-semibold text-slate-500">Aventuras</span>
+          </button>
+        </div>
 
+        <!-- World Info Header -->
+        <div class="flex justify-between items-center px-1">
+          <div>
+            <h3 id="world-title-label" class="text-sm font-extrabold text-slate-800 uppercase tracking-wider flex items-center gap-1.5">
+              <span>🌱</span> Mundo 1: Primeiros Amigos
+            </h3>
+            <p id="world-desc-label" class="text-[11px] text-slate-500 font-medium">Situações do cotidiano e cumprimentos básicos.</p>
+          </div>
+          <span id="world-progress-label" class="text-xs font-black text-indigo-600 bg-indigo-50 px-2.5 py-1 rounded-lg">
+            0 / 4 Fases
+          </span>
+        </div>
+
+        <!-- Mission Cards List -->
         <div id="missions-list" class="flex flex-col gap-3"></div>
 
-        <div class="bg-amber-50 border border-amber-200 rounded-xl p-3.5 mt-2 text-xs text-amber-800">
-          <p class="font-bold flex items-center gap-1.5 mb-1">
-            <span>💡</span> Dica para os pais:
-          </p>
-          <p>Seu filho pode <strong>falar no microfone</strong> para treinar a pronúncia ou <strong>escolher as frases na tela</strong> se estiver num ambiente barulhento. Toque em qualquer palavra para ouvi-la devagar!</p>
-        </div>
       </section>
 
       <!-- SCREEN 2: ACTIVE MISSION -->
       <section id="screen-dialogue" class="hidden flex-1 flex flex-col justify-between p-4 pb-2 overflow-y-auto">
         <div class="mb-2">
           <div class="flex justify-between items-center text-xs text-slate-500 font-bold mb-1">
-            <span id="mission-title-label">Missão: Na Sorveteria</span>
+            <span id="mission-title-label" class="truncate max-w-[200px]">Missão</span>
             <span id="step-counter">Passo 1 de 4</span>
           </div>
           <div class="w-full bg-slate-200 h-2.5 rounded-full overflow-hidden">
@@ -127,20 +153,20 @@
         <div class="flex flex-col items-center justify-center my-2">
           <div class="relative">
             <div id="char-avatar" class="text-7xl animate-bounce-slow filter drop-shadow-md cursor-pointer" onclick="speakCurrentNpcLine()">
-              🐧
+              🦊
             </div>
             <button onclick="speakCurrentNpcLine()" class="absolute -bottom-1 -right-1 bg-white text-indigo-600 rounded-full p-1.5 shadow-md border border-slate-100 hover:scale-110 active:scale-95 transition" title="Ouvir novamente">
               🔊
             </button>
           </div>
-          <span id="char-name" class="text-xs font-black text-indigo-600 uppercase tracking-widest mt-1">Chef Pingu</span>
+          <span id="char-name" class="text-xs font-black text-indigo-600 uppercase tracking-widest mt-1">Toby the Fox</span>
 
-          <div class="relative mt-3 max-w-[92%] w-full">
+          <div class="relative mt-3 max-w-[94%] w-full">
             <div class="bg-white border-2 border-indigo-200 rounded-2xl p-4 shadow-sm text-center pop-in relative">
               <div class="absolute -top-2.5 left-1/2 -translate-x-1/2 w-4 h-4 bg-white border-t-2 border-l-2 border-indigo-200 rotate-45"></div>
               <p id="npc-text-en" class="text-slate-800 font-extrabold text-base sm:text-lg leading-snug flex flex-wrap justify-center gap-1.5"></p>
               <p id="npc-text-pt" class="text-indigo-500 font-medium text-xs mt-2 border-t border-indigo-50 pt-2 transition">
-                "Olá! O que você quer tomar hoje?"
+                "Olá! Qual é o seu nome?"
               </p>
             </div>
           </div>
@@ -158,15 +184,15 @@
             </button>
           </div>
 
-          <div id="voice-input-container" class="flex flex-col items-center gap-3 py-2">
+          <div id="voice-input-container" class="flex flex-col items-center gap-2.5 py-1">
             <div class="bg-amber-50 border border-amber-200 rounded-xl p-3 w-full text-center">
-              <span class="text-[11px] font-bold text-amber-700 uppercase tracking-wider block mb-1">Diga em inglês:</span>
+              <span class="text-[10px] font-bold text-amber-700 uppercase tracking-wider block mb-1">Diga em inglês (+50 XP de Bônus):</span>
               <p id="target-phrase-en" class="text-slate-800 font-extrabold text-sm sm:text-base cursor-pointer flex items-center justify-center gap-1.5" onclick="speakTargetPhrase()">
-                <span id="target-phrase-text">"Can I have chocolate, please?"</span>
+                <span id="target-phrase-text">"Hello! My name is Alex."</span>
                 <span class="text-xs bg-amber-200 text-amber-800 px-1.5 py-0.5 rounded-full">🔊</span>
               </p>
               <p id="target-phrase-pt" class="text-amber-600 text-xs font-medium mt-1">
-                (Posso pegar chocolate, por favor?)
+                (Olá! Meu nome é Alex.)
               </p>
             </div>
 
@@ -187,35 +213,75 @@
 
       <!-- SCREEN 3: CELEBRATION -->
       <section id="screen-celebration" class="hidden flex-1 flex flex-col items-center justify-center p-6 text-center">
-        <div class="text-7xl animate-bounce-slow mb-3">🏆</div>
-        <h2 class="text-2xl font-black text-slate-800">Parabéns! Missão Cumprida!</h2>
-        <p class="text-slate-600 text-sm mt-1 mb-4">Você conversou em inglês como um verdadeiro campeão!</p>
+        <div class="text-7xl animate-bounce-slow mb-2">🏆</div>
+        <h2 class="text-2xl font-black text-slate-800">Missão Cumprida!</h2>
+        <p class="text-slate-600 text-xs mt-1 mb-4">Você conversou em inglês como um verdadeiro herói!</p>
 
-        <div class="bg-amber-50 border-2 border-amber-200 rounded-2xl p-4 w-full max-w-xs mb-5 shadow-sm flex justify-around items-center">
+        <div class="bg-amber-50 border-2 border-amber-200 rounded-2xl p-4 w-full max-w-xs mb-4 shadow-sm flex justify-around items-center">
           <div>
-            <div class="text-3xl">⭐</div>
-            <div class="font-black text-amber-800 text-lg">+3 Estrelas</div>
+            <div class="text-2xl">⚡</div>
+            <div class="font-black text-amber-900 text-base" id="earned-xp-amount">+150 XP</div>
+            <div class="text-[10px] font-bold text-amber-600">Experiência</div>
           </div>
           <div class="w-px h-10 bg-amber-200"></div>
           <div>
-            <div class="text-3xl">🏅</div>
-            <div class="font-black text-amber-800 text-lg" id="earned-badge-name">Mestre</div>
+            <div class="text-2xl">⭐</div>
+            <div class="font-black text-amber-900 text-base">+3 Estrelas</div>
+            <div class="text-[10px] font-bold text-amber-600">Recompensa</div>
+          </div>
+          <div class="w-px h-10 bg-amber-200"></div>
+          <div>
+            <div class="text-2xl">🏅</div>
+            <div class="font-black text-amber-900 text-sm truncate max-w-[80px]" id="earned-badge-name">Mestre</div>
+            <div class="text-[10px] font-bold text-amber-600">Medalha</div>
           </div>
         </div>
 
         <button onclick="goHome()" class="w-full max-w-xs bg-gradient-to-r from-emerald-500 to-green-600 text-white font-black py-3.5 px-6 rounded-2xl shadow-lg hover:brightness-105 active:scale-95 transition text-base">
-          Continuar Aventuras 🚀
+          Continuar Jornada 🚀
         </button>
       </section>
     </main>
 
-    <!-- Modal Dicionário -->
+    <!-- LEVEL UP MODAL -->
+    <div id="level-up-modal" class="hidden fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4 backdrop-blur-sm">
+      <div class="bg-gradient-to-b from-amber-400 to-orange-500 rounded-3xl p-6 w-full max-w-xs text-center shadow-2xl text-white pop-in border-4 border-amber-200">
+        <div class="text-7xl level-up-anim mb-2">⭐</div>
+        <span class="bg-white/20 text-xs font-black px-3 py-1 rounded-full uppercase tracking-widest">Subiu de Nível!</span>
+        <h3 id="modal-level-title" class="text-3xl font-black mt-2">NÍVEL 2</h3>
+        <p id="modal-level-rank" class="text-amber-100 font-bold text-sm mt-1 mb-4">Novo Título: Explorador de Palavras</p>
+        <p class="text-xs bg-black/15 p-2.5 rounded-xl font-medium mb-4">
+          Suas habilidades de conversação em inglês estão cada vez mais afiadas! Continue assim!
+        </p>
+        <button onclick="closeLevelUpModal()" class="w-full bg-white text-orange-600 font-black py-3 rounded-xl shadow-lg hover:bg-amber-50 active:scale-95 transition text-sm">
+          Sensacional! 🚀
+        </button>
+      </div>
+    </div>
+
+    <!-- TROPHIES MODAL -->
+    <div id="trophies-modal" class="hidden fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4 backdrop-blur-sm">
+      <div class="bg-white rounded-3xl p-5 w-full max-w-sm flex flex-col max-h-[85vh] shadow-2xl pop-in">
+        <div class="flex justify-between items-center mb-3">
+          <h3 class="text-base font-black text-slate-800 flex items-center gap-1.5">
+            <span>🏆</span> Sala de Troféus & Conquistas
+          </h3>
+          <button onclick="closeTrophiesModal()" class="text-slate-400 hover:text-slate-600 font-bold text-lg p-1">✕</button>
+        </div>
+        <p class="text-xs text-slate-500 mb-3">Complete as missões para desbloquear todas as medalhas e se tornar uma Lenda do Inglês!</p>
+        <div id="trophies-grid" class="flex-1 overflow-y-auto grid grid-cols-2 gap-2.5 pr-1"></div>
+        <button onclick="closeTrophiesModal()" class="mt-4 bg-slate-800 text-white font-bold py-2.5 rounded-xl text-xs">
+          Voltar ao Jogo
+        </button>
+      </div>
+    </div>
+
+    <!-- DICTIONARY MODAL -->
     <div id="word-modal" class="hidden fixed inset-0 bg-black/40 z-50 flex items-end sm:items-center justify-center p-4 backdrop-blur-sm">
       <div class="bg-white rounded-3xl p-5 w-full max-w-sm text-center shadow-2xl border border-slate-100 pop-in">
         <span class="text-3xl" id="modal-word-icon">📖</span>
         <h3 id="modal-word-en" class="text-xl font-black text-slate-800 mt-2">Word</h3>
         <p id="modal-word-pt" class="text-indigo-600 font-bold text-sm mb-4">Tradução</p>
-        
         <div class="flex gap-2">
           <button onclick="speakModalWord()" class="flex-1 bg-indigo-500 hover:bg-indigo-600 text-white font-bold py-2.5 rounded-xl transition flex items-center justify-center gap-1.5 text-sm">
             <span>🔊</span> Ouvir Pronúncia
@@ -226,491 +292,587 @@
         </div>
       </div>
     </div>
+
   </div>
 
   <script>
-    const MISSIONS = [
-      {
-        id: "ice_cream",
-        title: "Na Sorveteria Mágica",
-        icon: "🍦",
-        badge: "Chef do Sorvete",
-        npcName: "Chef Pingu",
-        npcAvatar: "🐧",
-        bgGradient: "from-pink-500 to-rose-500",
-        steps: [
+    const WORLDS = {
+      1: {
+        title: "🌱 Mundo 1: Primeiros Amigos",
+        desc: "Situações do cotidiano, apresentações e primeiros cumprimentos.",
+        missions: [
           {
-            npcEn: "Hello! Welcome to my Ice Cream Truck! What can I get for you?",
-            npcPt: "Olá! Bem-vindo ao meu carrinho de sorvete! O que posso pegar para você?",
-            targetEn: "Can I have chocolate ice cream, please?",
-            targetPt: "Posso pegar sorvete de chocolate, por favor?",
-            choices: [
-              { en: "Can I have chocolate ice cream, please?", pt: "Posso pegar sorvete de chocolate, por favor?", correct: true },
-              { en: "I do not like food today.", pt: "Eu não gosto de comida hoje.", correct: false },
-              { en: "Where is my pencil?", pt: "Onde está meu lápis?", correct: false }
+            id: "m1_friend",
+            title: "Conhecendo um Novo Amigo",
+            icon: "🦊",
+            badge: "Primeiro Amigo",
+            npcName: "Toby the Fox",
+            npcAvatar: "🦊",
+            bgGradient: "from-amber-500 to-orange-500",
+            unlockCost: 0,
+            steps: [
+              {
+                npcEn: "Hi! My name is Toby. What is your name?",
+                npcPt: "Oi! Meu nome é Toby. Qual é o seu nome?",
+                targetEn: "Hello Toby! My name is Alex.",
+                targetPt: "Olá Toby! Meu nome é Alex.",
+                choices: [
+                  { en: "Hello Toby! My name is Alex.", pt: "Olá Toby! Meu nome é Alex.", correct: true },
+                  { en: "The sky is blue today.", pt: "O céu está azul hoje.", correct: false },
+                  { en: "I want an apple.", pt: "Eu quero uma maçã.", correct: false }
+                ]
+              },
+              {
+                npcEn: "Nice to meet you! How old are you?",
+                npcPt: "Prazer em te conhecer! Quantos anos você tem?",
+                targetEn: "I am eight years old! How about you?",
+                targetPt: "Eu tenho 8 anos! E você?",
+                choices: [
+                  { en: "I am eight years old! How about you?", pt: "Eu tenho 8 anos! E você?", correct: true },
+                  { en: "I have two dogs at home.", pt: "Eu tenho dois cachorros em casa.", correct: false },
+                  { en: "It is raining outside.", pt: "Está chovendo lá fora.", correct: false }
+                ]
+              },
+              {
+                npcEn: "I am eight too! What is your favorite game to play?",
+                npcPt: "Eu também tenho oito! Qual é o seu jogo favorito?",
+                targetEn: "I love video games and soccer!",
+                targetPt: "Eu amo videogame e futebol!",
+                choices: [
+                  { en: "I love video games and soccer!", pt: "Eu amo videogame e futebol!", correct: true },
+                  { en: "I eat cereal for breakfast.", pt: "Eu como cereal no café.", correct: false },
+                  { en: "My shoes are red.", pt: "Meus sapatos são vermelhos.", correct: false }
+                ]
+              },
+              {
+                npcEn: "Soccer is awesome! Do you want to play together at the park?",
+                npcPt: "Futebol é demais! Você quer jogar junto no parque?",
+                targetEn: "Yes, let's play! Let's go!",
+                targetPt: "Sim, vamos jogar! Vamos lá!",
+                choices: [
+                  { en: "Yes, let's play! Let's go!", pt: "Sim, vamos jogar! Vamos lá!", correct: true },
+                  { en: "No, I am a cat.", pt: "Não, eu sou um gato.", correct: false },
+                  { en: "The table is brown.", pt: "A mesa é marrom.", correct: false }
+                ]
+              }
             ]
           },
           {
-            npcEn: "Great choice! Do you want one scoop or two scoops?",
-            npcPt: "Ótima escolha! Você quer uma bola ou duas bolas?",
-            targetEn: "Two scoops, please! I am very hungry!",
-            targetPt: "Duas bolas, por favor! Estou com muita fome!",
-            choices: [
-              { en: "Two scoops, please! I am very hungry!", pt: "Duas bolas, por favor! Estou com muita fome!", correct: true },
-              { en: "My favorite color is green.", pt: "Minha cor favorita é verde.", correct: false },
-              { en: "I sleep at ten o'clock.", pt: "Eu durmo às dez horas.", correct: false }
+            id: "m2_icecream",
+            title: "Na Sorveteria Mágica",
+            icon: "🍦",
+            badge: "Chef do Sorvete",
+            npcName: "Chef Pingu",
+            npcAvatar: "🐧",
+            bgGradient: "from-pink-500 to-rose-500",
+            unlockCost: 1,
+            steps: [
+              {
+                npcEn: "Hello! Welcome to my Ice Cream Truck! What can I get for you?",
+                npcPt: "Olá! Bem-vindo ao meu carrinho de sorvete! O que posso pegar para você?",
+                targetEn: "Can I have chocolate ice cream, please?",
+                targetPt: "Posso pegar sorvete de chocolate, por favor?",
+                choices: [
+                  { en: "Can I have chocolate ice cream, please?", pt: "Posso pegar sorvete de chocolate, por favor?", correct: true },
+                  { en: "I do not like food today.", pt: "Eu não gosto de comida hoje.", correct: false },
+                  { en: "Where is my pencil?", pt: "Onde está meu lápis?", correct: false }
+                ]
+              },
+              {
+                npcEn: "Great choice! Do you want one scoop or two scoops?",
+                npcPt: "Ótima escolha! Você quer uma bola ou duas bolas?",
+                targetEn: "Two scoops, please! I am very hungry!",
+                targetPt: "Duas bolas, por favor! Estou com muita fome!",
+                choices: [
+                  { en: "Two scoops, please! I am very hungry!", pt: "Duas bolas, por favor! Estou com muita fome!", correct: true },
+                  { en: "My favorite color is green.", pt: "Minha cor favorita é verde.", correct: false },
+                  { en: "I sleep at ten o'clock.", pt: "Eu durmo às dez horas.", correct: false }
+                ]
+              },
+              {
+                npcEn: "Here you go! Cold and delicious chocolate ice cream! 🍦 Anything else?",
+                npcPt: "Aqui está! Sorvete de chocolate gelado e delicioso! 🍦 Mais alguma coisa?",
+                targetEn: "Thank you so much! It looks yummy!",
+                targetPt: "Muito obrigado! Parece delicioso!",
+                choices: [
+                  { en: "Thank you so much! It looks yummy!", pt: "Muito obrigado! Parece delicioso!", correct: true },
+                  { en: "No, I am sleeping now.", pt: "Não, eu estou dormindo agora.", correct: false },
+                  { en: "Good morning teacher!", pt: "Bom dia professor!", correct: false }
+                ]
+              },
+              {
+                npcEn: "Enjoy your ice cream! Have an awesome day, my friend!",
+                npcPt: "Aproveite seu sorvete! Tenha um dia incrível, meu amigo!",
+                targetEn: "Goodbye! Have a nice day too!",
+                targetPt: "Tchau! Tenha um bom dia você também!",
+                choices: [
+                  { en: "Goodbye! Have a nice day too!", pt: "Tchau! Tenha um bom dia você também!", correct: true },
+                  { en: "I play soccer yesterday.", pt: "Eu joguei futebol ontem.", correct: false },
+                  { en: "Open the door please.", pt: "Abra a porta por favor.", correct: false }
+                ]
+              }
             ]
           },
           {
-            npcEn: "Here you go! Cold and delicious chocolate ice cream! 🍦 Anything else?",
-            npcPt: "Aqui está! Sorvete de chocolate gelado e delicioso! 🍦 Mais alguma coisa?",
-            targetEn: "Thank you so much! It looks yummy!",
-            targetPt: "Muito obrigado! Parece delicioso!",
-            choices: [
-              { en: "Thank you so much! It looks yummy!", pt: "Muito obrigado! Parece delicioso!", correct: true },
-              { en: "No, I am sleeping now.", pt: "Não, eu estou dormindo agora.", correct: false },
-              { en: "Good morning teacher!", pt: "Bom dia professor!", correct: false }
+            id: "m3_pet",
+            title: "No Pet Café dos Bichinhos",
+            icon: "🐶",
+            badge: "Protetor dos Pets",
+            npcName: "Bella",
+            npcAvatar: "🐶",
+            bgGradient: "from-emerald-500 to-teal-600",
+            unlockCost: 2,
+            steps: [
+              {
+                npcEn: "Woof! Welcome to the Pet Cafe! Do you like puppies or cats?",
+                npcPt: "Au au! Bem-vindo ao Pet Café! Você gosta de filhotes ou de gatos?",
+                targetEn: "I love puppies! They are so cute!",
+                targetPt: "Eu amo filhotes! Eles são tão fofos!",
+                choices: [
+                  { en: "I love puppies! They are so cute!", pt: "Eu amo filhotes! Eles são tão fofos!", correct: true },
+                  { en: "I like riding a bicycle.", pt: "Eu gosto de andar de bicicleta.", correct: false },
+                  { en: "Today is Monday.", pt: "Hoje é segunda-feira.", correct: false }
+                ]
+              },
+              {
+                npcEn: "Look at that little brown puppy! What is he doing?",
+                npcPt: "Olhe aquele cãozinho marrom! O que ele está fazendo?",
+                targetEn: "He is playing with a yellow ball!",
+                targetPt: "Ele está brincando com uma bola amarela!",
+                choices: [
+                  { en: "He is playing with a yellow ball!", pt: "Ele está brincando com uma bola amarela!", correct: true },
+                  { en: "He is flying in an airplane.", pt: "Ele está voando de avião.", correct: false },
+                  { en: "I am writing my homework.", pt: "Estou escrevendo meu dever.", correct: false }
+                ]
+              },
+              {
+                npcEn: "Can you help me feed him? What do dogs love to eat?",
+                npcPt: "Você pode me ajudar a alimentá-lo? O que cachorros adoram comer?",
+                targetEn: "Dogs love yummy treats and biscuits!",
+                targetPt: "Cachorros adoram petiscos e biscoitinhos gostosos!",
+                choices: [
+                  { en: "Dogs love yummy treats and biscuits!", pt: "Cachorros adoram petiscos e biscoitinhos gostosos!", correct: true },
+                  { en: "They like drinking hot coffee.", pt: "Eles gostam de tomar café quente.", correct: false },
+                  { en: "They eat paper and pencils.", pt: "Eles comem papel e lápis.", correct: false }
+                ]
+              }
             ]
           },
           {
-            npcEn: "Enjoy your ice cream! Have an awesome day, my friend!",
-            npcPt: "Aproveite seu sorvete! Tenha um dia incrível, meu amigo!",
-            targetEn: "Goodbye! Have a nice day too!",
-            targetPt: "Tchau! Tenha um bom dia você também!",
-            choices: [
-              { en: "Goodbye! Have a nice day too!", pt: "Tchau! Tenha um bom dia você também!", correct: true },
-              { en: "I play soccer yesterday.", pt: "Eu joguei futebol ontem.", correct: false },
-              { en: "Open the door please.", pt: "Abra a porta por favor.", correct: false }
+            id: "m4_school",
+            title: "A Mochila Perdida na Escola",
+            icon: "🎒",
+            badge: "Mestre da Escola",
+            npcName: "Leo the Lion",
+            npcAvatar: "🦁",
+            bgGradient: "from-blue-500 to-indigo-600",
+            unlockCost: 3,
+            steps: [
+              {
+                npcEn: "Excuse me! I lost my backpack in the classroom. What color is it?",
+                npcPt: "Com licença! Perdi minha mochila na sala de aula. De que cor ela é?",
+                targetEn: "Your backpack is bright blue and yellow!",
+                targetPt: "Sua mochila é azul brilhante e amarela!",
+                choices: [
+                  { en: "Your backpack is bright blue and yellow!", pt: "Sua mochila é azul brilhante e amarela!", correct: true },
+                  { en: "I am wearing shoes.", pt: "Estou usando sapatos.", correct: false },
+                  { en: "The sun is hot.", pt: "O sol está quente.", correct: false }
+                ]
+              },
+              {
+                npcEn: "Yes! Where did you see it? Is it on the desk or under the chair?",
+                npcPt: "Sim! Onde você a viu? Está em cima da mesa ou embaixo da cadeira?",
+                targetEn: "Look! It is on the wooden desk!",
+                targetPt: "Olhe! Está em cima da mesa de madeira!",
+                choices: [
+                  { en: "Look! It is on the wooden desk!", pt: "Olhe! Está em cima da mesa de madeira!", correct: true },
+                  { en: "I drink water every hour.", pt: "Eu bebo água toda hora.", correct: false },
+                  { en: "Tomorrow is Sunday.", pt: "Amanhã é domingo.", correct: false }
+                ]
+              },
+              {
+                npcEn: "You found it! Thank you! Do you have a pencil I can borrow?",
+                npcPt: "Você achou! Obrigado! Você tem um lápis que eu possa pegar emprestado?",
+                targetEn: "Sure! Here is a red pencil for you!",
+                targetPt: "Claro! Aqui está um lápis vermelho para você!",
+                choices: [
+                  { en: "Sure! Here is a red pencil for you!", pt: "Claro! Aqui está um lápis vermelho para você!", correct: true },
+                  { en: "I forgot how to run.", pt: "Esqueci como se corre.", correct: false },
+                  { en: "Cars drive fast on the road.", pt: "Carros andam rápido na estrada.", correct: false }
+                ]
+              }
             ]
           }
         ]
       },
-      {
-        id: "new_friend",
-        title: "Conhecendo um Novo Amigo",
-        icon: "🦊",
-        badge: "Super Amigo",
-        npcName: "Toby the Fox",
-        npcAvatar: "🦊",
-        bgGradient: "from-amber-500 to-orange-500",
-        steps: [
+      2: {
+        title: "🏙️ Mundo 2: Na Cidade",
+        desc: "Comprar comidas, pedir informações e passear pelo shopping e parque.",
+        missions: [
           {
-            npcEn: "Hi! My name is Toby. What is your name?",
-            npcPt: "Oi! Meu nome é Toby. Qual é o seu nome?",
-            targetEn: "Hello Toby! My name is Alex.",
-            targetPt: "Olá Toby! Meu nome é Alex.",
-            choices: [
-              { en: "Hello Toby! My name is Alex.", pt: "Olá Toby! Meu nome é Alex.", correct: true },
-              { en: "The sky is blue today.", pt: "O céu está azul hoje.", correct: false },
-              { en: "I want an apple.", pt: "Eu quero uma maçã.", correct: false }
+            id: "m5_supermarket",
+            title: "Compras no Supermercado",
+            icon: "🛒",
+            badge: "Super Comprador",
+            npcName: "Caixa Sam",
+            npcAvatar: "🐿️",
+            bgGradient: "from-amber-600 to-yellow-600",
+            unlockCost: 4,
+            steps: [
+              {
+                npcEn: "Hello! What healthy fruits are on your shopping list today?",
+                npcPt: "Olá! Quais frutas saudáveis estão na sua lista de compras hoje?",
+                targetEn: "I need red apples and sweet bananas!",
+                targetPt: "Eu preciso de maçãs vermelhas e bananas doces!",
+                choices: [
+                  { en: "I need red apples and sweet bananas!", pt: "Eu preciso de maçãs vermelhas e bananas doces!", correct: true },
+                  { en: "I have five toy cars.", pt: "Eu tenho cinco carrinhos.", correct: false },
+                  { en: "The moon shines at night.", pt: "A lua brilha à noite.", correct: false }
+                ]
+              },
+              {
+                npcEn: "Great! How many apples do you want to take?",
+                npcPt: "Ótimo! Quantas maçãs você quer levar?",
+                targetEn: "I want four big apples, please!",
+                targetPt: "Eu quero quatro maçãs grandes, por favor!",
+                choices: [
+                  { en: "I want four big apples, please!", pt: "Eu quero quatro maçãs grandes, por favor!", correct: true },
+                  { en: "My cousin lives far away.", pt: "Meu primo mora longe.", correct: false },
+                  { en: "Fish swim in the lake.", pt: "Peixes nadam no lago.", correct: false }
+                ]
+              },
+              {
+                npcEn: "That is five dollars. How do you want to pay?",
+                npcPt: "São cinco dólares. Como você quer pagar?",
+                targetEn: "Here is the money! Thank you, have a good day!",
+                targetPt: "Aqui está o dinheiro! Obrigado, tenha um bom dia!",
+                choices: [
+                  { en: "Here is the money! Thank you, have a good day!", pt: "Aqui está o dinheiro! Obrigado, tenha um bom dia!", correct: true },
+                  { en: "I don't know my name.", pt: "Eu não sei meu nome.", correct: false },
+                  { en: "My favorite sport is swimming.", pt: "Meu esporte favorito é natação.", correct: false }
+                ]
+              }
             ]
           },
           {
-            npcEn: "Nice to meet you! How old are you?",
-            npcPt: "Prazer em te conhecer! Quantos anos você tem?",
-            targetEn: "I am eight years old! How about you?",
-            targetPt: "Eu tenho 8 anos! E você?",
-            choices: [
-              { en: "I am eight years old! How about you?", pt: "Eu tenho 8 anos! E você?", correct: true },
-              { en: "I have two dogs at home.", pt: "Eu tenho dois cachorros em casa.", correct: false },
-              { en: "It is raining outside.", pt: "Está chovendo lá fora.", correct: false }
+            id: "m6_burger",
+            title: "Na Lanchonete dos Heróis",
+            icon: "🍔",
+            badge: "Mestre dos Lanches",
+            npcName: "Chef Roco",
+            npcAvatar: "🐻",
+            bgGradient: "from-orange-600 to-red-600",
+            unlockCost: 5,
+            steps: [
+              {
+                npcEn: "Welcome to Hero Burger! What would you like to eat?",
+                npcPt: "Bem-vindo ao Hambúrguer do Herói! O que você gostaria de comer?",
+                targetEn: "Can I have a cheese burger with french fries, please?",
+                targetPt: "Posso pedir um cheesebúrguer com batatas fritas, por favor?",
+                choices: [
+                  { en: "Can I have a cheese burger with french fries, please?", pt: "Posso pedir um cheesebúrguer com batatas fritas, por favor?", correct: true },
+                  { en: "I like wearing winter jackets.", pt: "Gosto de usar jaquetas de inverno.", correct: false },
+                  { en: "My pencil is broken.", pt: "Meu lápis está quebrado.", correct: false }
+                ]
+              },
+              {
+                npcEn: "Yummy! And what would you like to drink? Orange juice or water?",
+                npcPt: "Delícia! E o que você gostaria de beber? Suco de laranja ou água?",
+                targetEn: "A cold fresh orange juice, please!",
+                targetPt: "Um suco de laranja bem geladinho, por favor!",
+                choices: [
+                  { en: "A cold fresh orange juice, please!", pt: "Um suco de laranja bem geladinho, por favor!", correct: true },
+                  { en: "Birds fly in the sky.", pt: "Pássaros voam no céu.", correct: false },
+                  { en: "I go to bed at nine.", pt: "Vou para a cama às nove.", correct: false }
+                ]
+              },
+              {
+                npcEn: "Your meal is ready! Smells super good! Enjoy your food!",
+                npcPt: "Sua refeição está pronta! O cheiro está incrível! Bom apetite!",
+                targetEn: "Thank you Chef Roco! It looks fantastic!",
+                targetPt: "Obrigado Chef Roco! Parece fantástico!",
+                choices: [
+                  { en: "Thank you Chef Roco! It looks fantastic!", pt: "Obrigado Chef Roco! Parece fantástico!", correct: true },
+                  { en: "I cannot find my socks.", pt: "Não consigo achar minhas meias.", correct: false },
+                  { en: "Leaves fall in autumn.", pt: "Folhas caem no outono.", correct: false }
+                ]
+              }
             ]
           },
           {
-            npcEn: "I am eight too! What is your favorite game to play?",
-            npcPt: "Eu também tenho oito! Qual é o seu jogo favorito?",
-            targetEn: "I love video games and soccer!",
-            targetPt: "Eu amo videogame e futebol!",
-            choices: [
-              { en: "I love video games and soccer!", pt: "Eu amo videogame e futebol!", correct: true },
-              { en: "I eat cereal for breakfast.", pt: "Eu como cereal no café.", correct: false },
-              { en: "My shoes are red.", pt: "Meus sapatos são vermelhos.", correct: false }
+            id: "m7_park",
+            title: "No Parque de Diversões",
+            icon: "🎡",
+            badge: "Rei da Roda-Gigante",
+            npcName: "Guia Maya",
+            npcAvatar: "🦉",
+            bgGradient: "from-purple-600 to-pink-600",
+            unlockCost: 6,
+            steps: [
+              {
+                npcEn: "Welcome to Wonder Park! What ride do you want to try first?",
+                npcPt: "Bem-vindo ao Parque das Maravilhas! Qual brinquedo você quer ir primeiro?",
+                targetEn: "I want to ride the big roller coaster!",
+                targetPt: "Eu quero ir na grande montanha-russa!",
+                choices: [
+                  { en: "I want to ride the big roller coaster!", pt: "Eu quero ir na grande montanha-russa!", correct: true },
+                  { en: "I am washing the dishes.", pt: "Estou lavando a louça.", correct: false },
+                  { en: "Computers are fast.", pt: "Computadores são rápidos.", correct: false }
+                ]
+              },
+              {
+                npcEn: "Are you brave enough? The roller coaster is super fast!",
+                npcPt: "Você é corajoso o suficiente? A montanha-russa é super rápida!",
+                targetEn: "Yes! I am very brave and super excited!",
+                targetPt: "Sim! Eu sou muito corajoso e estou super animado!",
+                choices: [
+                  { en: "Yes! I am very brave and super excited!", pt: "Sim! Eu sou muito corajoso e estou super animado!", correct: true },
+                  { en: "I ate breakfast two hours ago.", pt: "Tomei café duas horas atrás.", correct: false },
+                  { en: "Turtles walk very slowly.", pt: "Tartarugas andam bem devagar.", correct: false }
+                ]
+              },
+              {
+                npcEn: "Hold on tight! Three, two, one... here we go! Hands up!",
+                npcPt: "Segure firme! Três, dois, um... lá vamos nós! Mãos para o alto!",
+                targetEn: "Woooow! This is so much fun!",
+                targetPt: "Uaaau! Isso é muito divertido!",
+                choices: [
+                  { en: "Woooow! This is so much fun!", pt: "Uaaau! Isso é muito divertido!", correct: true },
+                  { en: "I am doing my math test.", pt: "Estou fazendo minha prova de matemática.", correct: false },
+                  { en: "Please close the window.", pt: "Por favor feche a janela.", correct: false }
+                ]
+              }
             ]
           },
           {
-            npcEn: "Soccer is awesome! Do you want to play together at the park?",
-            npcPt: "Futebol é demais! Você quer jogar junto no parque?",
-            targetEn: "Yes, let's play! Let's go!",
-            targetPt: "Sim, vamos jogar! Vamos lá!",
-            choices: [
-              { en: "Yes, let's play! Let's go!", pt: "Sim, vamos jogar! Vamos lá!", correct: true },
-              { en: "No, I am a cat.", pt: "Não, eu sou um gato.", correct: false },
-              { en: "The table is brown.", pt: "A mesa é marrom.", correct: false }
+            id: "m8_doctor",
+            title: "O Doutor dos Campeões",
+            icon: "🩺",
+            badge: "Herói Saudável",
+            npcName: "Doutor Panda",
+            npcAvatar: "🐼",
+            bgGradient: "from-teal-600 to-cyan-600",
+            unlockCost: 7,
+            steps: [
+              {
+                npcEn: "Hello young hero! How are you feeling today?",
+                npcPt: "Olá jovem herói! Como você está se sentindo hoje?",
+                targetEn: "I have a little headache and my throat hurts.",
+                targetPt: "Estou com um pouco de dor de cabeça e minha garganta dói.",
+                choices: [
+                  { en: "I have a little headache and my throat hurts.", pt: "Estou com um pouco de dor de cabeça e minha garganta dói.", correct: true },
+                  { en: "My favorite game is hide and seek.", pt: "Minha brincadeira favorita é esconde-esconde.", correct: false },
+                  { en: "Today is sunny outside.", pt: "Hoje está ensolarado lá fora.", correct: false }
+                ]
+              },
+              {
+                npcEn: "Let me check your temperature. Did you drink lots of water?",
+                npcPt: "Deixe-me checar sua temperatura. Você bebeu bastante água?",
+                targetEn: "Yes, I drink lots of water and fruit juice!",
+                targetPt: "Sim, eu bebo muita água e suco de frutas!",
+                choices: [
+                  { en: "Yes, I drink lots of water and fruit juice!", pt: "Sim, eu bebo muita água e suco de frutas!", correct: true },
+                  { en: "I want to buy new shoes.", pt: "Quero comprar sapatos novos.", correct: false },
+                  { en: "The door is painted white.", pt: "A porta está pintada de branco.", correct: false }
+                ]
+              },
+              {
+                npcEn: "Good job! Get some good rest and you will be 100% soon!",
+                npcPt: "Bom trabalho! Descanse bastante e você estará 100% logo logo!",
+                targetEn: "Thank you doctor, I will rest now!",
+                targetPt: "Obrigado doutor, vou descansar agora!",
+                choices: [
+                  { en: "Thank you doctor, I will rest now!", pt: "Obrigado doutor, vou descansar agora!", correct: true },
+                  { en: "Dogs bark at the mailman.", pt: "Cachorros latem para o carteiro.", correct: false },
+                  { en: "I like riding the subway.", pt: "Gosto de andar de metrô.", correct: false }
+                ]
+              }
             ]
           }
         ]
       },
-      {
-        id: "pet_cafe",
-        title: "No Pet Café dos Bichinhos",
-        icon: "🐶",
-        badge: "Protetor dos Pets",
-        npcName: "Bella",
-        npcAvatar: "🐶",
-        bgGradient: "from-emerald-500 to-teal-600",
-        steps: [
+      3: {
+        title: "🏰 Mundo 3: Aventuras Épicas",
+        desc: "Dragões, piratas, astronautas e safáris selvagens em inglês!",
+        missions: [
           {
-            npcEn: "Woof! Welcome to the Pet Cafe! Do you like puppies or cats?",
-            npcPt: "Au au! Bem-vindo ao Pet Café! Você gosta de cachorrinhos ou de gatos?",
-            targetEn: "I love puppies! They are so cute!",
-            targetPt: "Eu amo cachorrinhos! Eles são tão fofos!",
-            choices: [
-              { en: "I love puppies! They are so cute!", pt: "Eu amo cachorrinhos! Eles são tão fofos!", correct: true },
-              { en: "I like riding a bicycle.", pt: "Eu gosto de andar de bicicleta.", correct: false },
-              { en: "Today is Monday.", pt: "Hoje é segunda-feira.", correct: false }
+            id: "m9_space",
+            title: "Aventura no Espaço com Alien",
+            icon: "🚀",
+            badge: "Herói das Galáxias",
+            npcName: "Zog the Alien",
+            npcAvatar: "👽",
+            bgGradient: "from-indigo-600 to-purple-800",
+            unlockCost: 8,
+            steps: [
+              {
+                npcEn: "Beep boop! Greetings, young astronaut! Where do you come from?",
+                npcPt: "Bip bup! Saudações, jovem astronauta! De onde você vem?",
+                targetEn: "I come from planet Earth, Brazil!",
+                targetPt: "Eu venho do planeta Terra, Brasil!",
+                choices: [
+                  { en: "I come from planet Earth, Brazil!", pt: "Eu venho do planeta Terra, Brasil!", correct: true },
+                  { en: "I am eating soup right now.", pt: "Estou tomando sopa agora.", correct: false },
+                  { en: "The door is closed.", pt: "A porta está fechada.", correct: false }
+                ]
+              },
+              {
+                npcEn: "Earth sounds beautiful! Look at the shining stars! How many can you count?",
+                npcPt: "A Terra parece linda! Olhe as estrelas brilhantes! Quantas você consegue contar?",
+                targetEn: "One, two, three, four, five stars!",
+                targetPt: "Uma, duas, três, quatro, cinco estrelas!",
+                choices: [
+                  { en: "One, two, three, four, five stars!", pt: "Uma, duas, três, quatro, cinco estrelas!", correct: true },
+                  { en: "My favorite animal is a tiger.", pt: "Meu animal favorito é um tigre.", correct: false },
+                  { en: "Today is very cold.", pt: "Hoje está muito frio.", correct: false }
+                ]
+              },
+              {
+                npcEn: "You speak great English, Earth friend! Will you fly with me again?",
+                npcPt: "Você fala ótimo inglês, amigo da Terra! Vai voar comigo de novo?",
+                targetEn: "Yes! See you soon, space friend! Bye!",
+                targetPt: "Sim! Até logo, amigo do espaço! Tchau!",
+                choices: [
+                  { en: "Yes! See you soon, space friend! Bye!", pt: "Sim! Até logo, amigo do espaço! Tchau!", correct: true },
+                  { en: "I lost my red socks.", pt: "Perdi minhas meias vermelhas.", correct: false },
+                  { en: "Turn off the light.", pt: "Apague a luz.", correct: false }
+                ]
+              }
             ]
           },
           {
-            npcEn: "Look at that little brown puppy! What is he doing?",
-            npcPt: "Olhe aquele cãozinho marrom! O que ele está fazendo?",
-            targetEn: "He is playing with a yellow ball!",
-            targetPt: "Ele está brincando com uma bola amarela!",
-            choices: [
-              { en: "He is playing with a yellow ball!", pt: "Ele está brincando com uma bola amarela!", correct: true },
-              { en: "He is flying in an airplane.", pt: "Ele está voando de avião.", correct: false },
-              { en: "I am writing my homework.", pt: "Estou escrevendo meu dever.", correct: false }
+            id: "m10_dragon",
+            title: "O Dragão Amigo no Castelo",
+            icon: "🐉",
+            badge: "Amigo dos Dragões",
+            npcName: "Ember the Dragon",
+            npcAvatar: "🐲",
+            bgGradient: "from-emerald-600 to-green-800",
+            unlockCost: 9,
+            steps: [
+              {
+                npcEn: "Roar! Welcome to my magic castle! Are you afraid of dragons?",
+                npcPt: "Rugido! Bem-vindo ao meu castelo mágico! Você tem medo de dragões?",
+                targetEn: "No, I am not afraid! You look like a friendly dragon!",
+                targetPt: "Não, não tenho medo! Você parece um dragão muito amigável!",
+                choices: [
+                  { en: "No, I am not afraid! You look like a friendly dragon!", pt: "Não, não tenho medo! Você parece um dragão muito amigável!", correct: true },
+                  { en: "I have breakfast at eight.", pt: "Eu tomo café às oito.", correct: false },
+                  { en: "Apples are red and sweet.", pt: "Maçãs são vermelhas e doces.", correct: false }
+                ]
+              },
+              {
+                npcEn: "I love baking marshmallows with my fire breath! Do you want one?",
+                npcPt: "Eu adoro assar marshmallows com meu bafo de fogo! Você quer um?",
+                targetEn: "Yes please! I love sweet roasted marshmallows!",
+                targetPt: "Sim por favor! Eu amo marshmallows assadinhos!",
+                choices: [
+                  { en: "Yes please! I love sweet roasted marshmallows!", pt: "Sim por favor! Eu amo marshmallows assadinhos!", correct: true },
+                  { en: "I left my umbrella at home.", pt: "Deixei meu guarda-chuva em casa.", correct: false },
+                  { en: "Soccer balls are round.", pt: "Bolas de futebol são redondas.", correct: false }
+                ]
+              },
+              {
+                npcEn: "You are the coolest hero I know! Let's fly over the mountains!",
+                npcPt: "Você é o herói mais legal que eu conheço! Vamos voar sobre as montanhas!",
+                targetEn: "Hold on! Let's touch the clouds! Woohoo!",
+                targetPt: "Segure firme! Vamos tocar as nuvens! Ebaa!",
+                choices: [
+                  { en: "Hold on! Let's touch the clouds! Woohoo!", pt: "Segure firme! Vamos tocar as nuvens! Ebaa!", correct: true },
+                  { en: "I need to do my homework.", pt: "Preciso fazer meu dever de casa.", correct: false },
+                  { en: "Fish breathe under water.", pt: "Peixes respiram debaixo d'água.", correct: false }
+                ]
+              }
             ]
           },
           {
-            npcEn: "Can you help me feed him? What do dogs love to eat?",
-            npcPt: "Você pode me ajudar a alimentá-lo? O que cachorros adoram comer?",
-            targetEn: "Dogs love yummy treats and biscuits!",
-            targetPt: "Cachorros adoram petiscos e biscoitinhos gostosos!",
-            choices: [
-              { en: "Dogs love yummy treats and biscuits!", pt: "Cachorros adoram petiscos e biscoitinhos gostosos!", correct: true },
-              { en: "They like drinking hot coffee.", pt: "Eles gostam de tomar café quente.", correct: false },
-              { en: "They eat paper and pencils.", pt: "Eles comem papel e lápis.", correct: false }
+            id: "m11_pirate",
+            title: "O Mapa do Tesouro Pirata",
+            icon: "🏴‍☠️",
+            badge: "Capitão dos Mares",
+            npcName: "Capitão Barba-Azul",
+            npcAvatar: "🦜",
+            bgGradient: "from-blue-700 to-cyan-900",
+            unlockCost: 10,
+            steps: [
+              {
+                npcEn: "Ahoy matey! We found a secret map! Where is the treasure chest buried?",
+                npcPt: "Ahoy marinheiro! Encontramos um mapa secreto! Onde o baú do tesouro está enterrado?",
+                targetEn: "The map says it is under the big palm tree!",
+                targetPt: "O mapa diz que está debaixo da grande palmeira!",
+                choices: [
+                  { en: "The map says it is under the big palm tree!", pt: "O mapa diz que está debaixo da grande palmeira!", correct: true },
+                  { en: "My favorite subject is English.", pt: "Minha matéria favorita é inglês.", correct: false },
+                  { en: "I like drinking hot tea.", pt: "Gosto de tomar chá quente.", correct: false }
+                ]
+              },
+              {
+                npcEn: "Shiver me timbers! Grab your shovel and dig! What is inside the chest?",
+                npcPt: "Caramba! Pegue sua pá e cave! O que tem dentro do baú?",
+                targetEn: "It is full of golden coins and shiny jewels!",
+                targetPt: "Está cheio de moedas de ouro e joias brilhantes!",
+                choices: [
+                  { en: "It is full of golden coins and shiny jewels!", pt: "Está cheio de moedas de ouro e joias brilhantes!", correct: true },
+                  { en: "I go to sleep at nine.", pt: "Vou dormir às nove.", correct: false },
+                  { en: "Trains run on railway tracks.", pt: "Trens andam em trilhos.", correct: false }
+                ]
+              },
+              {
+                npcEn: "You are the bravest pirate captain on the seven seas! Cheers!",
+                npcPt: "Você é o capitão pirata mais corajoso dos sete mares! Viva!",
+                targetEn: "Hurray! Adventure on the high seas forever!",
+                targetPt: "Viva! Aventura em alto mar para sempre!",
+                choices: [
+                  { en: "Hurray! Adventure on the high seas forever!", pt: "Viva! Aventura em alto mar para sempre!", correct: true },
+                  { en: "I left my jacket at school.", pt: "Esqueci minha jaqueta na escola.", correct: false },
+                  { en: "Tomorrow is Tuesday.", pt: "Amanhã é terça-feira.", correct: false }
+                ]
+              }
+            ]
+          },
+          {
+            id: "m12_safari",
+            title: "Safári na Selva dos Animais",
+            icon: "🦁",
+            badge: "Lenda do Safári",
+            npcName: "Ranger Rafa",
+            npcAvatar: "🦒",
+            bgGradient: "from-yellow-700 to-amber-900",
+            unlockCost: 11,
+            steps: [
+              {
+                npcEn: "Look through your binoculars! What wild animal is drinking water?",
+                npcPt: "Olhe pelo seu binóculo! Qual animal selvagem está bebendo água?",
+                targetEn: "I can see a giant elephant with long ears!",
+                targetPt: "Eu consigo ver um elefante gigante com orelhas compridas!",
+                choices: [
+                  { en: "I can see a giant elephant with long ears!", pt: "Eu consigo ver um elefante gigante com orelhas compridas!", correct: true },
+                  { en: "I wear blue socks.", pt: "Eu uso meias azuis.", correct: false },
+                  { en: "My kitchen is very clean.", pt: "Minha cozinha está bem limpa.", correct: false }
+                ]
+              },
+              {
+                npcEn: "Awesome! And look up in the tall acacia tree! Who is eating leaves?",
+                npcPt: "Incrível! E olhe lá no alto da acácia! Quem está comendo folhas?",
+                targetEn: "A super tall giraffe with a very long neck!",
+                targetPt: "Uma girafa super alta com um pescoço bem comprido!",
+                choices: [
+                  { en: "A super tall giraffe with a very long neck!", pt: "Uma girafa super alta com um pescoço bem comprido!", correct: true },
+                  { en: "I play video games after dinner.", pt: "Jogo videogame depois do jantar.", correct: false },
+                  { en: "The pencil is sharp.", pt: "O lápis está apontado.", correct: false }
+                ]
+              },
+              {
+                npcEn: "You are an official Wildlife Hero! Did you take great pictures?",
+                npcPt: "Você é um Herói da Vida Selvagem oficial! Você tirou ótimas fotos?",
+                targetEn: "Yes! Amazing photos of all the wild animals!",
+                targetPt: "Sim! Fotos incríveis de todos os animais selvagens!",
+                choices: [
+                  { en: "Yes! Amazing photos of all the wild animals!", pt: "Sim! Fotos incríveis de todos os animais selvagens!", correct: true },
+                  { en: "I drink orange juice in the morning.", pt: "Tomo suco de laranja de manhã.", correct: false },
+                  { en: "The clock is ticking.", pt: "O relógio está marcando.", correct: false }
+                ]
+              }
             ]
           }
         ]
-      },
-      {
-        id: "space_mission",
-        title: "Aventura no Espaço com Alien",
-        icon: "🚀",
-        badge: "Herói das Galáxias",
-        npcName: "Zog the Alien",
-        npcAvatar: "👽",
-        bgGradient: "from-indigo-600 to-purple-800",
-        steps: [
-          {
-            npcEn: "Beep boop! Greetings, young astronaut! Where do you come from?",
-            npcPt: "Bip bup! Saudações, jovem astronauta! De onde você vem?",
-            targetEn: "I come from planet Earth, Brazil!",
-            targetPt: "Eu venho do planeta Terra, Brasil!",
-            choices: [
-              { en: "I come from planet Earth, Brazil!", pt: "Eu venho do planeta Terra, Brasil!", correct: true },
-              { en: "I am eating soup right now.", pt: "Estou tomando sopa agora.", correct: false },
-              { en: "The door is closed.", pt: "A porta está fechada.", correct: false }
-            ]
-          },
-          {
-            npcEn: "Earth sounds beautiful! Look at the shining stars! How many can you count?",
-            npcPt: "A Terra parece linda! Olhe as estrelas brilhantes! Quantas você consegue contar?",
-            targetEn: "One, two, three, four, five stars!",
-            targetPt: "Uma, duas, três, quatro, cinco estrelas!",
-            choices: [
-              { en: "One, two, three, four, five stars!", pt: "Uma, duas, três, quatro, cinco estrelas!", correct: true },
-              { en: "My favorite animal is a tiger.", pt: "Meu animal favorito é um tigre.", correct: false },
-              { en: "Today is very cold.", pt: "Hoje está muito frio.", correct: false }
-            ]
-          },
-          {
-            npcEn: "You speak great English, Earth friend! Will you fly with me again?",
-            npcPt: "Você fala ótimo inglês, amigo da Terra! Vai voar comigo de novo?",
-            targetEn: "Yes! See you soon, space friend! Bye!",
-            targetPt: "Sim! Até logo, amigo do espaço! Tchau!",
-            choices: [
-              { en: "Yes! See you soon, space friend! Bye!", pt: "Sim! Até logo, amigo do espaço! Tchau!", correct: true },
-              { en: "I lost my red socks.", pt: "Perdi minhas meias vermelhas.", correct: false },
-              { en: "Turn off the light.", pt: "Apague a luz.", correct: false }
-            ]
-          }
-        ]
-      }
-    ];
-
-    const VOCAB = {
-      "hello": "Olá", "welcome": "Bem-vindo(a)", "ice": "Gelo", "cream": "Creme (Sorvete)",
-      "chocolate": "Chocolate", "please": "Por favor", "great": "Ótimo", "choice": "Escolha",
-      "two": "Dois", "scoops": "Bolas de sorvete", "hungry": "Com fome", "cold": "Gelado / Frio",
-      "delicious": "Delicioso", "yummy": "Gostoso / Delícia", "thank": "Agradecer", "goodbye": "Tchau",
-      "name": "Nome", "eight": "Oito", "years": "Anos", "old": "Idade", "favorite": "Favorito(a)",
-      "color": "Cor", "game": "Jogo", "soccer": "Futebol", "park": "Parque", "together": "Juntos",
-      "puppy": "Filhote de cão", "puppies": "Cachorrinhos", "cute": "Fofo(a)", "ball": "Bola",
-      "playing": "Brincando", "yellow": "Amarelo(a)", "treats": "Petiscos", "astronaut": "Astronauta",
-      "stars": "Estrelas", "earth": "Terra", "space": "Espaço", "friend": "Amigo(a)", "can": "Pode / Consigo"
-    };
-
-    let audioCtx = null;
-    function getAudioContext() {
-      if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-      if (audioCtx.state === 'suspended') audioCtx.resume();
-      return audioCtx;
-    }
-
-    function playTone(freq, type, duration, delay = 0) {
-      try {
-        const ctx = getAudioContext();
-        setTimeout(() => {
-          const osc = ctx.createOscillator();
-          const gain = ctx.createGain();
-          osc.type = type;
-          osc.frequency.setValueAtTime(freq, ctx.currentTime);
-          gain.gain.setValueAtTime(0.15, ctx.currentTime);
-          gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + duration);
-          osc.connect(gain);
-          gain.connect(ctx.destination);
-          osc.start();
-          osc.stop(ctx.currentTime + duration);
-        }, delay);
-      } catch (e) {}
-    }
-
-    function playSuccessSound() {
-      playTone(523.25, 'triangle', 0.15, 0);
-      playTone(659.25, 'triangle', 0.15, 120);
-      playTone(783.99, 'triangle', 0.25, 240);
-      playTone(1046.50, 'triangle', 0.4, 360);
-    }
-
-    function playClickSound() { playTone(440, 'sine', 0.08, 0); }
-    function playErrorSound() { playTone(300, 'sawtooth', 0.15, 0); playTone(240, 'sawtooth', 0.25, 120); }
-
-    let speechSpeed = 1.0;
-    function toggleAudioSpeed() {
-      speechSpeed = speechSpeed === 1.0 ? 0.75 : 1.0;
-      document.getElementById('btn-speed').innerHTML = speechSpeed === 1.0 ? '<span>🐰</span> Normal' : '<span>🐢</span> Devagar';
-      playClickSound();
-    }
-
-    function speakText(text, onEnd) {
-      if (!('speechSynthesis' in window)) return;
-      window.speechSynthesis.cancel();
-      const utterance = new SpeechSynthesisUtterance(text);
-      utterance.lang = 'en-US';
-      utterance.rate = speechSpeed;
-      utterance.pitch = 1.15;
-      if (onEnd) utterance.onend = onEnd;
-      window.speechSynthesis.speak(utterance);
-    }
-
-    let recognition = null;
-    let isListening = false;
-    let inputMode = 'voice';
-
-    function initSpeechRecognition() {
-      const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-      if (!SpeechRecognition) return null;
-      const rec = new SpeechRecognition();
-      rec.lang = 'en-US';
-      rec.continuous = false;
-      rec.interimResults = false;
-      rec.onstart = () => { isListening = true; updateMicButtonUI(); };
-      rec.onresult = (event) => handleSpokenAnswer(event.results[0][0].transcript);
-      rec.onerror = () => { isListening = false; updateMicButtonUI(); setInputMode('tiles'); };
-      rec.onend = () => { isListening = false; updateMicButtonUI(); };
-      return rec;
-    }
-
-    function toggleSpeechRecognition() {
-      getAudioContext();
-      if (!recognition) recognition = initSpeechRecognition();
-      if (!recognition) { setInputMode('tiles'); return; }
-      if (isListening) recognition.stop();
-      else try { recognition.start(); } catch (e) {}
-    }
-
-    function updateMicButtonUI() {
-      const btn = document.getElementById('btn-mic');
-      const label = document.getElementById('mic-status-label');
-      const instruction = document.getElementById('mic-instruction');
-      if (isListening) {
-        btn.classList.add('listening-pulse');
-        label.textContent = "Ouvindo...";
-        instruction.textContent = "Fale agora em inglês!";
-      } else {
-        btn.classList.remove('listening-pulse');
-        label.textContent = "Aperte";
-        instruction.textContent = "Toque no microfone e fale a frase acima!";
-      }
-    }
-
-    function toggleInputMode() { setInputMode(inputMode === 'voice' ? 'tiles' : 'voice'); }
-    function setInputMode(mode) {
-      inputMode = mode;
-      document.getElementById('voice-input-container').classList.toggle('hidden', mode !== 'voice');
-      document.getElementById('choice-tiles-container').classList.toggle('hidden', mode === 'voice');
-      document.getElementById('toggle-input-mode-btn').textContent = mode === 'voice' ? "Mudar para modo Toque 👆" : "Mudar para modo Voz 🎙️";
-    }
-
-    let currentMission = null;
-    let currentStepIndex = 0;
-    let stars = 0;
-    let showTranslations = true;
-
-    function renderMissionsList() {
-      const listEl = document.getElementById('missions-list');
-      listEl.innerHTML = '';
-      MISSIONS.forEach((m) => {
-        const card = document.createElement('div');
-        card.className = "bg-white border-2 border-slate-200 hover:border-indigo-400 rounded-2xl p-4 shadow-sm transition active:scale-[0.98] cursor-pointer flex items-center justify-between";
-        card.onclick = () => startMission(m.id);
-        card.innerHTML = `
-          <div class="flex items-center gap-3.5">
-            <div class="w-14 h-14 rounded-2xl bg-gradient-to-tr ${m.bgGradient} flex items-center justify-center text-3xl shadow-md text-white">${m.icon}</div>
-            <div>
-              <h4 class="font-black text-slate-800 text-base leading-tight">${m.title}</h4>
-              <p class="text-xs text-slate-500 font-semibold mt-0.5">Amigo: ${m.npcAvatar} ${m.npcName} (${m.steps.length} diálogos)</p>
-              <div class="flex items-center gap-1 mt-1 text-[11px] font-bold text-amber-600">🏅 ${m.badge}</div>
-            </div>
-          </div>
-          <div class="text-slate-400 font-black text-xl">➔</div>
-        `;
-        listEl.appendChild(card);
-      });
-    }
-
-    function startMission(missionId) {
-      getAudioContext();
-      currentMission = MISSIONS.find(m => m.id === missionId);
-      currentStepIndex = 0;
-      document.getElementById('screen-home').classList.add('hidden');
-      document.getElementById('screen-dialogue').classList.remove('hidden');
-      document.getElementById('screen-celebration').classList.add('hidden');
-      loadStep();
-    }
-
-    function loadStep() {
-      const step = currentMission.steps[currentStepIndex];
-      document.getElementById('mission-title-label').textContent = currentMission.title;
-      document.getElementById('step-counter').textContent = `Passo ${currentStepIndex + 1} de ${currentMission.steps.length}`;
-      document.getElementById('mission-progress-bar').style.width = `${((currentStepIndex) / currentMission.steps.length) * 100}%`;
-      document.getElementById('char-avatar').textContent = currentMission.npcAvatar;
-      document.getElementById('char-name').textContent = currentMission.npcName;
-      
-      renderNpcWords(step.npcEn);
-      document.getElementById('npc-text-pt').textContent = `"${step.npcPt}"`;
-      document.getElementById('npc-text-pt').style.display = showTranslations ? 'block' : 'none';
-      document.getElementById('target-phrase-text').textContent = `"${step.targetEn}"`;
-      document.getElementById('target-phrase-pt').textContent = `(${step.targetPt})`;
-      document.getElementById('target-phrase-pt').style.display = showTranslations ? 'block' : 'none';
-
-      renderChoiceTiles(step.choices);
-      hideFeedback();
-      setTimeout(speakCurrentNpcLine, 350);
-    }
-
-    function renderNpcWords(sentence) {
-      const container = document.getElementById('npc-text-en');
-      container.innerHTML = '';
-      sentence.split(' ').forEach(rawWord => {
-        const cleanWord = rawWord.toLowerCase().replace(/[^a-z]/g, '');
-        const span = document.createElement('span');
-        span.className = "inline-block px-1 py-0.5 rounded-lg hover:bg-indigo-100 cursor-pointer";
-        span.textContent = rawWord;
-        span.onclick = (e) => { e.stopPropagation(); openWordModal(cleanWord, rawWord); };
-        container.appendChild(span);
-      });
-    }
-
-    function renderChoiceTiles(choices) {
-      const container = document.getElementById('choices-list');
-      container.innerHTML = '';
-      choices.forEach(ch => {
-        const btn = document.createElement('button');
-        btn.className = "w-full text-left bg-white border-2 border-slate-200 hover:border-indigo-400 p-3 rounded-xl transition shadow-sm active:scale-[0.98] flex flex-col";
-        btn.onclick = () => handleTileChoice(ch);
-        btn.innerHTML = `<span class="font-extrabold text-slate-800 text-sm">${ch.en}</span>` +
-          (showTranslations ? `<span class="text-xs text-indigo-500 font-medium mt-0.5">${ch.pt}</span>` : '');
-        container.appendChild(btn);
-      });
-    }
-
-    function speakCurrentNpcLine() { speakText(currentMission.steps[currentStepIndex].npcEn); }
-    function speakTargetPhrase() { speakText(currentMission.steps[currentStepIndex].targetEn); }
-
-    function handleSpokenAnswer(spokenText) {
-      const step = currentMission.steps[currentStepIndex];
-      const target = step.targetEn.toLowerCase().replace(/[^a-z0-9]/g, '');
-      const spoken = spokenText.toLowerCase().replace(/[^a-z0-9]/g, '');
-      if (spoken === target || spoken.includes(target) || target.includes(spoken)) {
-        showFeedback(true, `Você disse: "${spokenText}"! Maravilhoso! ⭐`);
-        onStepSuccess();
-      } else {
-        playErrorSound();
-        showFeedback(false, `Você disse: "${spokenText}". Vamos tentar de novo?`);
-      }
-    }
-
-    function handleTileChoice(choice) {
-      if (choice.correct) {
-        speakText(choice.en, () => {
-          showFeedback(true, "Resposta perfeita! Muito bem! ⭐");
-          onStepSuccess();
-        });
-      } else {
-        playErrorSound();
-        showFeedback(false, "Essa não combina bem com a conversa. Tente a outra!");
-      }
-    }
-
-    function onStepSuccess() {
-      playSuccessSound();
-      stars += 1;
-      document.getElementById('star-count').textContent = stars;
-      setTimeout(() => {
-        currentStepIndex++;
-        if (currentStepIndex >= currentMission.steps.length) showCelebration();
-        else loadStep();
-      }, 1500);
-    }
-
-    function showCelebration() {
-      document.getElementById('screen-dialogue').classList.add('hidden');
-      document.getElementById('screen-celebration').classList.remove('hidden');
-      document.getElementById('earned-badge-name').textContent = currentMission.badge;
-      playSuccessSound();
-      speakText("Congratulations! Mission accomplished!");
-    }
-
-    function goHome() {
-      if (isListening && recognition) recognition.stop();
-      document.getElementById('screen-home').classList.remove('hidden');
-      document.getElementById('screen-dialogue').classList.add('hidden');
-      document.getElementById('screen-celebration').classList.add('hidden');
-    }
-
-    function showFeedback(isSuccess, message) {
-      const box = document.getElementById('feedback-box');
-      box.className = "text-center py-2 px-3 rounded-xl text-xs font-bold my-1 transition " +
-        (isSuccess ? "bg-emerald-100 text-emerald-800 border border-emerald-300" : "bg-rose-100 text-rose-800 border border-rose-300");
-      document.getElementById('feedback-text').textContent = message;
-    }
-
-    function hideFeedback() { document.getElementById('feedback-box').className = "hidden"; }
-
-    function toggleTranslationGlobal() {
-      showTranslations = !showTranslations;
-      const btn = document.getElementById('toggle-translation-btn');
-      btn.textContent = showTranslations ? "Ligado" : "Desligado";
-      btn.className = (showTranslations ? "bg-emerald-500" : "bg-slate-400") + " text-white font-bold px-3 py-1 rounded-full text-xs transition";
-      if (currentMission) loadStep();
-    }
-
-    let activeModalWord = "";
-    function openWordModal(cleanWord, rawWord) {
-      activeModalWord = cleanWord;
-      document.getElementById('modal-word-en').textContent = rawWord;
-      document.getElementById('modal-word-pt').textContent = `Tradução: ${VOCAB[cleanWord] || "Palavra em inglês"}`;
-      document.getElementById('word-modal').classList.remove('hidden');
-      speakText(cleanWord);
-    }
-
-    function speakModalWord() { if (activeModalWord) speakText(activeModalWord); }
-    function closeWordModal() { document.getElementById('word-modal').classList.add('hidden'); }
-
-    window.onload = () => { renderMissionsList(); setInputMode('voice'); };
-  </script>
-</body>
-</html>
