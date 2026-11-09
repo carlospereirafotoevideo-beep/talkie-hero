@@ -3,169 +3,149 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>TalkieHero: Missões em Inglês 2.0</title>
+  <title>TalkieHero Dark: Missões em Inglês</title>
   
-  <meta name="theme-color" content="#f59e0b">
+  <meta name="theme-color" content="#121214">
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 
   <script src="https://www.gstatic.com/antigravity/web/dev/tailwindcss.min.js"></script>
   <style>
-    @keyframes bounce-slow {
-      0%, 100% { transform: translateY(0); }
-      50% { transform: translateY(-8px); }
-    }
+    body { background-color: #09090b; color: #f4f4f5; }
+    @keyframes bounce-slow { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-6px); } }
     @keyframes pulse-ring {
       0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7); }
       70% { transform: scale(1.08); box-shadow: 0 0 0 16px rgba(239, 68, 68, 0); }
       100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); }
     }
-    @keyframes pop-in {
-      0% { opacity: 0; transform: scale(0.85); }
-      100% { opacity: 1; transform: scale(1); }
-    }
-    @keyframes level-up-glow {
-      0%, 100% { transform: scale(1); filter: drop-shadow(0 0 15px rgba(251, 191, 36, 0.8)); }
-      50% { transform: scale(1.05); filter: drop-shadow(0 0 25px rgba(245, 158, 11, 1)); }
+    @keyframes pop-in { 0% { opacity: 0; transform: scale(0.88); } 100% { opacity: 1; transform: scale(1); } }
+    @keyframes glow-amber {
+      0%, 100% { filter: drop-shadow(0 0 10px rgba(245, 158, 11, 0.6)); }
+      50% { filter: drop-shadow(0 0 20px rgba(245, 158, 11, 0.9)); }
     }
     .animate-bounce-slow { animation: bounce-slow 2.5s infinite ease-in-out; }
-    .listening-pulse { animation: pulse-ring 1.5s infinite; }
-    .pop-in { animation: pop-in 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards; }
-    .level-up-anim { animation: level-up-glow 1.2s infinite ease-in-out; }
+    .listening-pulse { animation: pulse-ring 1.4s infinite; }
+    .pop-in { animation: pop-in 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards; }
+    .glow-gold { animation: glow-amber 2s infinite ease-in-out; }
     ::-webkit-scrollbar { width: 4px; height: 4px; }
-    ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
+    ::-webkit-scrollbar-thumb { background: #3f3f46; border-radius: 4px; }
   </style>
 </head>
-<body class="bg-slate-100 text-slate-800 font-sans antialiased select-none min-h-screen flex justify-center items-center p-0 sm:p-4">
+<body class="bg-[#09090b] text-zinc-100 font-sans antialiased select-none min-h-screen flex justify-center items-center p-0 sm:p-4">
 
-  <!-- Mobile Device Frame Container -->
-  <div id="app" class="w-full max-w-md bg-white sm:rounded-3xl shadow-2xl flex flex-col min-h-screen sm:min-h-[820px] sm:max-h-[880px] overflow-hidden border border-slate-200 relative">
+  <div id="app" class="w-full max-w-md bg-[#121214] sm:rounded-3xl shadow-2xl flex flex-col min-h-screen sm:min-h-[820px] sm:max-h-[880px] overflow-hidden border border-[#27272a] relative">
     
-    <!-- Top Player Status Bar (Persistent Progression: Level, XP, Stars, Streaks) -->
-    <header class="bg-gradient-to-r from-amber-400 via-orange-400 to-amber-500 px-3.5 py-2.5 text-white flex flex-col gap-1.5 shadow-md z-10">
-      
-      <!-- Top Row: Navigation, Player Title & Settings -->
+    <header class="bg-[#18181b] border-b border-[#27272a] px-3.5 py-2.5 text-zinc-100 flex flex-col gap-1.5 z-10 shadow-lg">
       <div class="flex justify-between items-center">
         <div class="flex items-center gap-2">
-          <button id="btn-back-home" onclick="goHome()" class="p-1.5 bg-white/20 hover:bg-white/30 rounded-xl transition active:scale-95 text-sm font-bold flex items-center">
+          <button id="btn-back-home" onclick="goHome()" class="p-1.5 bg-[#27272a] hover:bg-[#3f3f46] rounded-xl transition active:scale-95 text-sm font-bold flex items-center border border-[#3f3f46]">
             <span>🏠</span>
           </button>
           <div>
             <div class="flex items-center gap-1.5">
-              <span id="player-rank-badge" class="bg-white/25 text-[10px] uppercase font-black px-2 py-0.5 rounded-full">Nível 1</span>
-              <span id="player-title" class="font-black tracking-wide text-xs drop-shadow-sm">Aprendiz Curioso</span>
+              <span id="player-rank-badge" class="bg-amber-500/20 text-amber-400 border border-amber-500/30 text-[10px] uppercase font-black px-2 py-0.5 rounded-full">Nível 1</span>
+              <span id="player-title" class="font-black tracking-wide text-xs text-zinc-200">Aprendiz Curioso</span>
             </div>
           </div>
         </div>
 
         <div class="flex items-center gap-2 text-xs font-black">
-          <div class="flex items-center gap-1 bg-white/25 px-2.5 py-1 rounded-full backdrop-blur-sm" title="Total de Estrelas">
+          <div class="flex items-center gap-1 bg-[#27272a] border border-[#3f3f46] px-2.5 py-1 rounded-full" title="Total de Estrelas">
             <span>⭐</span>
-            <span id="star-count">0</span>
+            <span id="star-count" class="text-amber-400">0</span>
           </div>
-          <button onclick="openTrophiesModal()" class="bg-white/25 hover:bg-white/35 px-2.5 py-1 rounded-full backdrop-blur-sm transition flex items-center gap-1" title="Sala de Troféus">
+          <button onclick="openTrophiesModal()" class="bg-[#27272a] hover:bg-[#3f3f46] border border-[#3f3f46] px-2.5 py-1 rounded-full transition flex items-center gap-1" title="Sala de Troféus">
             <span>🏆</span>
-            <span id="trophy-count">0/12</span>
+            <span id="trophy-count" class="text-amber-400">0/12</span>
           </button>
-          <button onclick="toggleAudioSpeed()" id="btn-speed" class="bg-white text-orange-600 px-2.5 py-1 rounded-full shadow font-extrabold flex items-center gap-1 hover:bg-amber-50 transition active:scale-95" title="Velocidade da voz">
+          <button onclick="toggleAudioSpeed()" id="btn-speed" class="bg-amber-500 text-black px-2.5 py-1 rounded-full font-black flex items-center gap-1 hover:bg-amber-400 transition active:scale-95" title="Velocidade da voz">
             <span>🐰</span> <span id="speed-label">1x</span>
           </button>
         </div>
       </div>
 
-      <!-- Bottom Row: XP Progress Bar -->
       <div class="flex items-center gap-2 pt-0.5">
-        <span class="text-[10px] font-black uppercase text-amber-100 tracking-wider">XP</span>
-        <div class="flex-1 bg-black/20 h-2.5 rounded-full overflow-hidden p-0.5">
-          <div id="player-xp-bar" class="bg-gradient-to-r from-emerald-300 to-green-400 h-full rounded-full transition-all duration-500" style="width: 10%;"></div>
+        <span class="text-[10px] font-black uppercase text-amber-400 tracking-wider">XP</span>
+        <div class="flex-1 bg-[#27272a] h-2.5 rounded-full overflow-hidden p-0.5 border border-[#3f3f46]">
+          <div id="player-xp-bar" class="bg-gradient-to-r from-amber-500 via-orange-500 to-emerald-400 h-full rounded-full transition-all duration-500" style="width: 10%;"></div>
         </div>
-        <span id="player-xp-text" class="text-[10px] font-extrabold text-white">0 / 100</span>
+        <span id="player-xp-text" class="text-[10px] font-extrabold text-zinc-400">0 / 100</span>
       </div>
-
     </header>
 
-    <!-- MAIN VIEW CONTAINER -->
-    <main class="flex-1 flex flex-col overflow-y-auto relative bg-slate-50">
+    <main class="flex-1 flex flex-col overflow-y-auto relative bg-[#121214]">
       
-      <!-- SCREEN 1: ADVENTURE MAP & WORLDS (HOME) -->
-      <section id="screen-home" class="p-4 flex flex-col gap-4">
-        
-        <!-- Daily Quest Banner -->
-        <div class="bg-gradient-to-br from-indigo-600 via-indigo-700 to-purple-700 rounded-2xl p-4 text-white shadow-lg relative overflow-hidden">
-          <div class="absolute -right-4 -bottom-4 text-7xl opacity-20 select-none">🎯</div>
+      <!-- SCREEN 1: MAP -->
+      <section id="screen-home" class="p-4 flex flex-col gap-3.5">
+        <div class="bg-gradient-to-br from-[#1e1b4b] via-[#18181b] to-[#1e1b4b] border border-indigo-500/30 rounded-2xl p-3.5 text-white shadow-xl relative overflow-hidden">
           <div class="flex justify-between items-start">
-            <span class="bg-amber-400 text-amber-950 text-[10px] font-black px-2.5 py-0.5 rounded-full uppercase tracking-wider">
+            <span class="bg-amber-500 text-black text-[10px] font-black px-2.5 py-0.5 rounded-full uppercase tracking-wider">
               ⚡ Missão do Dia (+100 XP)
             </span>
-            <span class="text-xs font-bold text-indigo-200" id="daily-date-label">Hoje</span>
+            <span class="text-xs font-bold text-indigo-300">Hoje</span>
           </div>
-          <h2 class="text-lg font-black mt-1.5" id="daily-quest-title">Desafio: Bate-papo Rápido!</h2>
-          <p class="text-indigo-100 text-xs mt-0.5" id="daily-quest-desc">Converse com Toby e ganhe bônus especial de evolução.</p>
-          
-          <button onclick="startDailyChallenge()" class="mt-3 bg-gradient-to-r from-amber-400 to-amber-500 hover:from-amber-300 hover:to-amber-400 text-slate-900 font-black text-xs py-2 px-4 rounded-xl shadow transition active:scale-95 flex items-center gap-1.5">
+          <h2 class="text-base font-black mt-1.5 text-white">Desafio: Praticar Conversação!</h2>
+          <p class="text-zinc-400 text-xs mt-0.5">Fale em inglês no microfone e ganhe bônus em dobro!</p>
+          <button onclick="startDailyChallenge()" class="mt-2.5 bg-gradient-to-r from-amber-400 to-amber-500 hover:from-amber-300 hover:to-amber-400 text-black font-black text-xs py-2 px-4 rounded-xl shadow transition active:scale-95 flex items-center gap-1.5">
             <span>🎮</span> Jogar Missão Diária
           </button>
         </div>
 
-        <!-- World Tabs -->
-        <div class="flex bg-slate-200/80 p-1 rounded-2xl gap-1 text-xs font-extrabold">
-          <button onclick="selectWorld(1)" id="tab-world-1" class="flex-1 py-2 rounded-xl transition text-center bg-white shadow-sm text-indigo-600">
-            🌱 Mundo 1<br><span class="text-[10px] font-semibold text-slate-500">Dia a Dia</span>
+        <div class="flex bg-[#18181b] p-1 rounded-2xl gap-1 border border-[#27272a] text-xs font-extrabold">
+          <button onclick="selectWorld(1)" id="tab-world-1" class="flex-1 py-2 rounded-xl transition text-center bg-[#27272a] text-amber-400 shadow-sm border border-[#3f3f46]">
+            🌱 Mundo 1<br><span class="text-[10px] font-semibold text-zinc-400">Dia a Dia</span>
           </button>
-          <button onclick="selectWorld(2)" id="tab-world-2" class="flex-1 py-2 rounded-xl transition text-center text-slate-600 hover:bg-white/50">
-            🏙️ Mundo 2<br><span class="text-[10px] font-semibold text-slate-500">Na Cidade</span>
+          <button onclick="selectWorld(2)" id="tab-world-2" class="flex-1 py-2 rounded-xl transition text-center text-zinc-400 hover:bg-[#27272a]">
+            🏙️ Mundo 2<br><span class="text-[10px] font-semibold text-zinc-500">Na Cidade</span>
           </button>
-          <button onclick="selectWorld(3)" id="tab-world-3" class="flex-1 py-2 rounded-xl transition text-center text-slate-600 hover:bg-white/50">
-            🏰 Mundo 3<br><span class="text-[10px] font-semibold text-slate-500">Aventuras</span>
+          <button onclick="selectWorld(3)" id="tab-world-3" class="flex-1 py-2 rounded-xl transition text-center text-zinc-400 hover:bg-[#27272a]">
+            🏰 Mundo 3<br><span class="text-[10px] font-semibold text-zinc-500">Aventuras</span>
           </button>
         </div>
 
-        <!-- World Info Header -->
         <div class="flex justify-between items-center px-1">
           <div>
-            <h3 id="world-title-label" class="text-sm font-extrabold text-slate-800 uppercase tracking-wider flex items-center gap-1.5">
+            <h3 id="world-title-label" class="text-xs font-black text-zinc-200 uppercase tracking-wider flex items-center gap-1.5">
               <span>🌱</span> Mundo 1: Primeiros Amigos
             </h3>
-            <p id="world-desc-label" class="text-[11px] text-slate-500 font-medium">Situações do cotidiano e cumprimentos básicos.</p>
+            <p id="world-desc-label" class="text-[11px] text-zinc-500 font-medium">Toque em qualquer fase para começar a falar!</p>
           </div>
-          <span id="world-progress-label" class="text-xs font-black text-indigo-600 bg-indigo-50 px-2.5 py-1 rounded-lg">
-            0 / 4 Fases
+          <span id="world-progress-label" class="text-xs font-black text-amber-400 bg-amber-500/10 border border-amber-500/20 px-2 py-0.5 rounded-lg">
+            0 / 4 Concluídas
           </span>
         </div>
 
-        <!-- Mission Cards List -->
-        <div id="missions-list" class="flex flex-col gap-3"></div>
-
+        <div id="missions-list" class="flex flex-col gap-2.5"></div>
       </section>
 
-      <!-- SCREEN 2: ACTIVE MISSION -->
+      <!-- SCREEN 2: DIALOGUE -->
       <section id="screen-dialogue" class="hidden flex-1 flex flex-col justify-between p-4 pb-2 overflow-y-auto">
         <div class="mb-2">
-          <div class="flex justify-between items-center text-xs text-slate-500 font-bold mb-1">
-            <span id="mission-title-label" class="truncate max-w-[200px]">Missão</span>
-            <span id="step-counter">Passo 1 de 4</span>
+          <div class="flex justify-between items-center text-xs text-zinc-400 font-bold mb-1">
+            <span id="mission-title-label" class="truncate max-w-[200px] text-zinc-200 font-extrabold">Missão</span>
+            <span id="step-counter" class="text-amber-400">Passo 1 de 4</span>
           </div>
-          <div class="w-full bg-slate-200 h-2.5 rounded-full overflow-hidden">
-            <div id="mission-progress-bar" class="bg-emerald-500 h-full w-1/4 transition-all duration-500 rounded-full"></div>
+          <div class="w-full bg-[#27272a] h-2 rounded-full overflow-hidden border border-[#3f3f46]">
+            <div id="mission-progress-bar" class="bg-gradient-to-r from-amber-500 to-emerald-400 h-full w-1/4 transition-all duration-500 rounded-full"></div>
           </div>
         </div>
 
-        <div class="flex flex-col items-center justify-center my-2">
+        <div class="flex flex-col items-center justify-center my-1.5">
           <div class="relative">
-            <div id="char-avatar" class="text-7xl animate-bounce-slow filter drop-shadow-md cursor-pointer" onclick="speakCurrentNpcLine()">
+            <div id="char-avatar" class="text-6xl animate-bounce-slow filter drop-shadow-md cursor-pointer" onclick="speakCurrentNpcLine()">
               🦊
             </div>
-            <button onclick="speakCurrentNpcLine()" class="absolute -bottom-1 -right-1 bg-white text-indigo-600 rounded-full p-1.5 shadow-md border border-slate-100 hover:scale-110 active:scale-95 transition" title="Ouvir novamente">
+            <button onclick="speakCurrentNpcLine()" class="absolute -bottom-1 -right-1 bg-[#27272a] text-amber-400 border border-[#3f3f46] rounded-full p-1.5 shadow-md hover:scale-110 active:scale-95 transition" title="Ouvir novamente">
               🔊
             </button>
           </div>
-          <span id="char-name" class="text-xs font-black text-indigo-600 uppercase tracking-widest mt-1">Toby the Fox</span>
+          <span id="char-name" class="text-xs font-black text-amber-400 uppercase tracking-widest mt-1">Toby the Fox</span>
 
-          <div class="relative mt-3 max-w-[94%] w-full">
-            <div class="bg-white border-2 border-indigo-200 rounded-2xl p-4 shadow-sm text-center pop-in relative">
-              <div class="absolute -top-2.5 left-1/2 -translate-x-1/2 w-4 h-4 bg-white border-t-2 border-l-2 border-indigo-200 rotate-45"></div>
-              <p id="npc-text-en" class="text-slate-800 font-extrabold text-base sm:text-lg leading-snug flex flex-wrap justify-center gap-1.5"></p>
-              <p id="npc-text-pt" class="text-indigo-500 font-medium text-xs mt-2 border-t border-indigo-50 pt-2 transition">
+          <div class="relative mt-2.5 max-w-[95%] w-full">
+            <div class="bg-[#18181b] border border-[#27272a] rounded-2xl p-3.5 shadow-lg text-center pop-in relative">
+              <div class="absolute -top-2 left-1/2 -translate-x-1/2 w-3.5 h-3.5 bg-[#18181b] border-t border-l border-[#27272a] rotate-45"></div>
+              <p id="npc-text-en" class="text-zinc-100 font-extrabold text-base leading-snug flex flex-wrap justify-center gap-1.5"></p>
+              <p id="npc-text-pt" class="text-zinc-400 font-medium text-xs mt-2 border-t border-[#27272a] pt-1.5">
                 "Olá! Qual é o seu nome?"
               </p>
             </div>
@@ -176,31 +156,31 @@
           <span id="feedback-icon">🎉</span> <span id="feedback-text">Excelente pronúncia!</span>
         </div>
 
-        <div class="mt-auto flex flex-col gap-2.5 pt-2 border-t border-slate-200">
-          <div class="flex justify-between items-center text-xs font-bold text-slate-500 px-1">
-            <span class="flex items-center gap-1">🗣️ Sua vez de responder:</span>
-            <button id="toggle-input-mode-btn" onclick="toggleInputMode()" class="text-indigo-600 hover:underline">
+        <div class="mt-auto flex flex-col gap-2 pt-2 border-t border-[#27272a]">
+          <div class="flex justify-between items-center text-xs font-bold text-zinc-400 px-1">
+            <span class="flex items-center gap-1">🗣️ Sua resposta:</span>
+            <button id="toggle-input-mode-btn" onclick="toggleInputMode()" class="text-amber-400 hover:underline">
               Mudar para modo Toque 👆
             </button>
           </div>
 
-          <div id="voice-input-container" class="flex flex-col items-center gap-2.5 py-1">
-            <div class="bg-amber-50 border border-amber-200 rounded-xl p-3 w-full text-center">
-              <span class="text-[10px] font-bold text-amber-700 uppercase tracking-wider block mb-1">Diga em inglês (+50 XP de Bônus):</span>
-              <p id="target-phrase-en" class="text-slate-800 font-extrabold text-sm sm:text-base cursor-pointer flex items-center justify-center gap-1.5" onclick="speakTargetPhrase()">
+          <div id="voice-input-container" class="flex flex-col items-center gap-2 py-1">
+            <div class="bg-[#18181b] border border-[#27272a] rounded-xl p-3 w-full text-center">
+              <span class="text-[10px] font-bold text-amber-400 uppercase tracking-wider block mb-0.5">Diga em inglês (+50 XP):</span>
+              <p id="target-phrase-en" class="text-white font-extrabold text-sm sm:text-base cursor-pointer flex items-center justify-center gap-1.5" onclick="speakTargetPhrase()">
                 <span id="target-phrase-text">"Hello! My name is Alex."</span>
-                <span class="text-xs bg-amber-200 text-amber-800 px-1.5 py-0.5 rounded-full">🔊</span>
+                <span class="text-xs bg-[#27272a] border border-[#3f3f46] text-amber-400 px-1.5 py-0.5 rounded-full">🔊</span>
               </p>
-              <p id="target-phrase-pt" class="text-amber-600 text-xs font-medium mt-1">
+              <p id="target-phrase-pt" class="text-zinc-400 text-xs font-medium mt-0.5">
                 (Olá! Meu nome é Alex.)
               </p>
             </div>
 
-            <button id="btn-mic" onclick="toggleSpeechRecognition()" class="w-20 h-20 rounded-full bg-gradient-to-tr from-rose-500 to-red-500 text-white flex flex-col items-center justify-center shadow-lg hover:scale-105 active:scale-95 transition-all">
-              <span class="text-3xl">🎙️</span>
-              <span id="mic-status-label" class="text-[10px] font-black uppercase tracking-wider mt-0.5">Aperte</span>
+            <button id="btn-mic" onclick="toggleSpeechRecognition()" class="w-16 h-16 rounded-full bg-gradient-to-tr from-rose-600 to-red-500 text-white flex flex-col items-center justify-center shadow-xl hover:scale-105 active:scale-95 transition-all border-2 border-red-400/40">
+              <span class="text-2xl">🎙️</span>
+              <span id="mic-status-label" class="text-[9px] font-black uppercase tracking-wider">Aperte</span>
             </button>
-            <p id="mic-instruction" class="text-slate-500 text-xs text-center font-medium">
+            <p id="mic-instruction" class="text-zinc-500 text-[11px] text-center font-medium">
               Toque no microfone e fale a frase acima!
             </p>
           </div>
@@ -214,26 +194,26 @@
       <!-- SCREEN 3: CELEBRATION -->
       <section id="screen-celebration" class="hidden flex-1 flex flex-col items-center justify-center p-6 text-center">
         <div class="text-7xl animate-bounce-slow mb-2">🏆</div>
-        <h2 class="text-2xl font-black text-slate-800">Missão Cumprida!</h2>
-        <p class="text-slate-600 text-xs mt-1 mb-4">Você conversou em inglês como um verdadeiro herói!</p>
+        <h2 class="text-2xl font-black text-white">Missão Cumprida!</h2>
+        <p class="text-zinc-400 text-xs mt-1 mb-4">Você conversou em inglês como um verdadeiro herói!</p>
 
-        <div class="bg-amber-50 border-2 border-amber-200 rounded-2xl p-4 w-full max-w-xs mb-4 shadow-sm flex justify-around items-center">
+        <div class="bg-[#18181b] border border-[#27272a] rounded-2xl p-4 w-full max-w-xs mb-4 shadow-xl flex justify-around items-center">
           <div>
             <div class="text-2xl">⚡</div>
-            <div class="font-black text-amber-900 text-base" id="earned-xp-amount">+150 XP</div>
-            <div class="text-[10px] font-bold text-amber-600">Experiência</div>
+            <div class="font-black text-amber-400 text-base" id="earned-xp-amount">+150 XP</div>
+            <div class="text-[10px] font-bold text-zinc-500">Experiência</div>
           </div>
-          <div class="w-px h-10 bg-amber-200"></div>
+          <div class="w-px h-10 bg-[#27272a]"></div>
           <div>
             <div class="text-2xl">⭐</div>
-            <div class="font-black text-amber-900 text-base">+3 Estrelas</div>
-            <div class="text-[10px] font-bold text-amber-600">Recompensa</div>
+            <div class="font-black text-amber-400 text-base">+3 Estrelas</div>
+            <div class="text-[10px] font-bold text-zinc-500">Recompensa</div>
           </div>
-          <div class="w-px h-10 bg-amber-200"></div>
+          <div class="w-px h-10 bg-[#27272a]"></div>
           <div>
             <div class="text-2xl">🏅</div>
-            <div class="font-black text-amber-900 text-sm truncate max-w-[80px]" id="earned-badge-name">Mestre</div>
-            <div class="text-[10px] font-bold text-amber-600">Medalha</div>
+            <div class="font-black text-amber-400 text-sm truncate max-w-[80px]" id="earned-badge-name">Mestre</div>
+            <div class="text-[10px] font-bold text-zinc-500">Medalha</div>
           </div>
         </div>
 
@@ -244,49 +224,49 @@
     </main>
 
     <!-- LEVEL UP MODAL -->
-    <div id="level-up-modal" class="hidden fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4 backdrop-blur-sm">
-      <div class="bg-gradient-to-b from-amber-400 to-orange-500 rounded-3xl p-6 w-full max-w-xs text-center shadow-2xl text-white pop-in border-4 border-amber-200">
-        <div class="text-7xl level-up-anim mb-2">⭐</div>
-        <span class="bg-white/20 text-xs font-black px-3 py-1 rounded-full uppercase tracking-widest">Subiu de Nível!</span>
-        <h3 id="modal-level-title" class="text-3xl font-black mt-2">NÍVEL 2</h3>
-        <p id="modal-level-rank" class="text-amber-100 font-bold text-sm mt-1 mb-4">Novo Título: Explorador de Palavras</p>
-        <p class="text-xs bg-black/15 p-2.5 rounded-xl font-medium mb-4">
-          Suas habilidades de conversação em inglês estão cada vez mais afiadas! Continue assim!
+    <div id="level-up-modal" class="hidden fixed inset-0 bg-black/80 z-50 flex items-center justify-center p-4 backdrop-blur-md">
+      <div class="bg-[#18181b] border-2 border-amber-500/50 rounded-3xl p-6 w-full max-w-xs text-center shadow-2xl text-white pop-in">
+        <div class="text-6xl glow-gold mb-2">⭐</div>
+        <span class="bg-amber-500/20 text-amber-400 border border-amber-500/30 text-xs font-black px-3 py-1 rounded-full uppercase tracking-widest">Subiu de Nível!</span>
+        <h3 id="modal-level-title" class="text-2xl font-black mt-2 text-white">NÍVEL 2</h3>
+        <p id="modal-level-rank" class="text-amber-400 font-bold text-sm mt-0.5 mb-3">Novo Título: Explorador de Palavras</p>
+        <p class="text-xs text-zinc-400 bg-[#27272a] p-2.5 rounded-xl font-medium mb-4">
+          Suas habilidades de conversação em inglês estão cada vez melhores!
         </p>
-        <button onclick="closeLevelUpModal()" class="w-full bg-white text-orange-600 font-black py-3 rounded-xl shadow-lg hover:bg-amber-50 active:scale-95 transition text-sm">
-          Sensacional! 🚀
+        <button onclick="closeLevelUpModal()" class="w-full bg-amber-500 text-black font-black py-3 rounded-xl shadow-lg hover:bg-amber-400 active:scale-95 transition text-sm">
+          Continuar Jogando 🚀
         </button>
       </div>
     </div>
 
     <!-- TROPHIES MODAL -->
-    <div id="trophies-modal" class="hidden fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4 backdrop-blur-sm">
-      <div class="bg-white rounded-3xl p-5 w-full max-w-sm flex flex-col max-h-[85vh] shadow-2xl pop-in">
+    <div id="trophies-modal" class="hidden fixed inset-0 bg-black/80 z-50 flex items-center justify-center p-4 backdrop-blur-md">
+      <div class="bg-[#18181b] border border-[#27272a] rounded-3xl p-5 w-full max-w-sm flex flex-col max-h-[85vh] shadow-2xl pop-in">
         <div class="flex justify-between items-center mb-3">
-          <h3 class="text-base font-black text-slate-800 flex items-center gap-1.5">
+          <h3 class="text-sm font-black text-white flex items-center gap-1.5">
             <span>🏆</span> Sala de Troféus & Conquistas
           </h3>
-          <button onclick="closeTrophiesModal()" class="text-slate-400 hover:text-slate-600 font-bold text-lg p-1">✕</button>
+          <button onclick="closeTrophiesModal()" class="text-zinc-400 hover:text-white font-bold text-lg p-1">✕</button>
         </div>
-        <p class="text-xs text-slate-500 mb-3">Complete as missões para desbloquear todas as medalhas e se tornar uma Lenda do Inglês!</p>
-        <div id="trophies-grid" class="flex-1 overflow-y-auto grid grid-cols-2 gap-2.5 pr-1"></div>
-        <button onclick="closeTrophiesModal()" class="mt-4 bg-slate-800 text-white font-bold py-2.5 rounded-xl text-xs">
+        <p class="text-[11px] text-zinc-400 mb-3">Complete missões para colecionar todas as 12 medalhas!</p>
+        <div id="trophies-grid" class="flex-1 overflow-y-auto grid grid-cols-2 gap-2 pr-1"></div>
+        <button onclick="closeTrophiesModal()" class="mt-3.5 bg-[#27272a] hover:bg-[#3f3f46] text-white font-bold py-2 rounded-xl text-xs border border-[#3f3f46]">
           Voltar ao Jogo
         </button>
       </div>
     </div>
 
     <!-- DICTIONARY MODAL -->
-    <div id="word-modal" class="hidden fixed inset-0 bg-black/40 z-50 flex items-end sm:items-center justify-center p-4 backdrop-blur-sm">
-      <div class="bg-white rounded-3xl p-5 w-full max-w-sm text-center shadow-2xl border border-slate-100 pop-in">
+    <div id="word-modal" class="hidden fixed inset-0 bg-black/80 z-50 flex items-end sm:items-center justify-center p-4 backdrop-blur-sm">
+      <div class="bg-[#18181b] border border-[#27272a] rounded-3xl p-5 w-full max-w-sm text-center shadow-2xl pop-in">
         <span class="text-3xl" id="modal-word-icon">📖</span>
-        <h3 id="modal-word-en" class="text-xl font-black text-slate-800 mt-2">Word</h3>
-        <p id="modal-word-pt" class="text-indigo-600 font-bold text-sm mb-4">Tradução</p>
+        <h3 id="modal-word-en" class="text-xl font-black text-white mt-1">Word</h3>
+        <p id="modal-word-pt" class="text-amber-400 font-bold text-sm mb-4">Tradução</p>
         <div class="flex gap-2">
-          <button onclick="speakModalWord()" class="flex-1 bg-indigo-500 hover:bg-indigo-600 text-white font-bold py-2.5 rounded-xl transition flex items-center justify-center gap-1.5 text-sm">
+          <button onclick="speakModalWord()" class="flex-1 bg-amber-500 hover:bg-amber-400 text-black font-black py-2.5 rounded-xl transition flex items-center justify-center gap-1.5 text-xs">
             <span>🔊</span> Ouvir Pronúncia
           </button>
-          <button onclick="closeWordModal()" class="bg-slate-200 hover:bg-slate-300 text-slate-700 font-bold py-2.5 px-4 rounded-xl transition text-sm">
+          <button onclick="closeWordModal()" class="bg-[#27272a] hover:bg-[#3f3f46] text-zinc-300 font-bold py-2.5 px-4 rounded-xl transition text-xs border border-[#3f3f46]">
             Fechar
           </button>
         </div>
@@ -308,8 +288,7 @@
             badge: "Primeiro Amigo",
             npcName: "Toby the Fox",
             npcAvatar: "🦊",
-            bgGradient: "from-amber-500 to-orange-500",
-            unlockCost: 0,
+            bgGradient: "from-amber-600 to-orange-700",
             steps: [
               {
                 npcEn: "Hi! My name is Toby. What is your name?",
@@ -364,8 +343,7 @@
             badge: "Chef do Sorvete",
             npcName: "Chef Pingu",
             npcAvatar: "🐧",
-            bgGradient: "from-pink-500 to-rose-500",
-            unlockCost: 1,
+            bgGradient: "from-pink-700 to-rose-800",
             steps: [
               {
                 npcEn: "Hello! Welcome to my Ice Cream Truck! What can I get for you?",
@@ -420,8 +398,7 @@
             badge: "Protetor dos Pets",
             npcName: "Bella",
             npcAvatar: "🐶",
-            bgGradient: "from-emerald-500 to-teal-600",
-            unlockCost: 2,
+            bgGradient: "from-emerald-700 to-teal-800",
             steps: [
               {
                 npcEn: "Woof! Welcome to the Pet Cafe! Do you like puppies or cats?",
@@ -465,8 +442,7 @@
             badge: "Mestre da Escola",
             npcName: "Leo the Lion",
             npcAvatar: "🦁",
-            bgGradient: "from-blue-500 to-indigo-600",
-            unlockCost: 3,
+            bgGradient: "from-blue-700 to-indigo-800",
             steps: [
               {
                 npcEn: "Excuse me! I lost my backpack in the classroom. What color is it?",
@@ -516,8 +492,7 @@
             badge: "Super Comprador",
             npcName: "Caixa Sam",
             npcAvatar: "🐿️",
-            bgGradient: "from-amber-600 to-yellow-600",
-            unlockCost: 4,
+            bgGradient: "from-amber-700 to-yellow-800",
             steps: [
               {
                 npcEn: "Hello! What healthy fruits are on your shopping list today?",
@@ -561,8 +536,7 @@
             badge: "Mestre dos Lanches",
             npcName: "Chef Roco",
             npcAvatar: "🐻",
-            bgGradient: "from-orange-600 to-red-600",
-            unlockCost: 5,
+            bgGradient: "from-orange-700 to-red-800",
             steps: [
               {
                 npcEn: "Welcome to Hero Burger! What would you like to eat?",
@@ -606,8 +580,7 @@
             badge: "Rei da Roda-Gigante",
             npcName: "Guia Maya",
             npcAvatar: "🦉",
-            bgGradient: "from-purple-600 to-pink-600",
-            unlockCost: 6,
+            bgGradient: "from-purple-700 to-pink-800",
             steps: [
               {
                 npcEn: "Welcome to Wonder Park! What ride do you want to try first?",
@@ -651,8 +624,7 @@
             badge: "Herói Saudável",
             npcName: "Doutor Panda",
             npcAvatar: "🐼",
-            bgGradient: "from-teal-600 to-cyan-600",
-            unlockCost: 7,
+            bgGradient: "from-teal-700 to-cyan-800",
             steps: [
               {
                 npcEn: "Hello young hero! How are you feeling today?",
@@ -702,8 +674,7 @@
             badge: "Herói das Galáxias",
             npcName: "Zog the Alien",
             npcAvatar: "👽",
-            bgGradient: "from-indigo-600 to-purple-800",
-            unlockCost: 8,
+            bgGradient: "from-indigo-700 to-purple-900",
             steps: [
               {
                 npcEn: "Beep boop! Greetings, young astronaut! Where do you come from?",
@@ -747,8 +718,7 @@
             badge: "Amigo dos Dragões",
             npcName: "Ember the Dragon",
             npcAvatar: "🐲",
-            bgGradient: "from-emerald-600 to-green-800",
-            unlockCost: 9,
+            bgGradient: "from-emerald-700 to-green-900",
             steps: [
               {
                 npcEn: "Roar! Welcome to my magic castle! Are you afraid of dragons?",
@@ -792,8 +762,7 @@
             badge: "Capitão dos Mares",
             npcName: "Capitão Barba-Azul",
             npcAvatar: "🦜",
-            bgGradient: "from-blue-700 to-cyan-900",
-            unlockCost: 10,
+            bgGradient: "from-blue-800 to-slate-900",
             steps: [
               {
                 npcEn: "Ahoy matey! We found a secret map! Where is the treasure chest buried?",
@@ -837,8 +806,7 @@
             badge: "Lenda do Safári",
             npcName: "Ranger Rafa",
             npcAvatar: "🦒",
-            bgGradient: "from-yellow-700 to-amber-900",
-            unlockCost: 11,
+            bgGradient: "from-amber-800 to-yellow-950",
             steps: [
               {
                 npcEn: "Look through your binoculars! What wild animal is drinking water?",
@@ -876,3 +844,463 @@
             ]
           }
         ]
+      }
+    };
+
+    const VOCAB = {
+      "hello": "Olá", "welcome": "Bem-vindo(a)", "ice": "Gelo", "cream": "Sorvete", "chocolate": "Chocolate",
+      "please": "Por favor", "great": "Ótimo", "choice": "Escolha", "two": "Dois", "scoops": "Bolas de sorvete",
+      "hungry": "Com fome", "cold": "Gelado", "delicious": "Delicioso", "yummy": "Gostoso", "thank": "Agradecer",
+      "goodbye": "Tchau", "name": "Nome", "eight": "Oito", "years": "Anos", "favorite": "Favorito(a)",
+      "game": "Jogo", "soccer": "Futebol", "park": "Parque", "together": "Juntos", "puppy": "Filhote",
+      "cute": "Fofo(a)", "ball": "Bola", "playing": "Brincando", "yellow": "Amarelo", "treats": "Petiscos",
+      "astronaut": "Astronauta", "stars": "Estrelas", "earth": "Terra", "dragon": "Dragão", "castle": "Castelo",
+      "fire": "Fogo", "brave": "Corajoso(a)", "pirate": "Pirata", "treasure": "Tesouro", "island": "Ilha",
+      "elephant": "Elefante", "giraffe": "Girafa", "photos": "Fotos", "wild": "Selvagem", "supermarket": "Supermercado",
+      "apples": "Maçãs", "bananas": "Bananas", "burger": "Hambúrguer", "fries": "Batata frita", "orange": "Laranja"
+    };
+
+    const RANKS = [
+      { level: 1, title: "Aprendiz Curioso", xpNeeded: 100 },
+      { level: 2, title: "Explorador de Palavras", xpNeeded: 250 },
+      { level: 3, title: "Falante Corajoso", xpNeeded: 450 },
+      { level: 4, title: "Mestre dos Diálogos", xpNeeded: 700 },
+      { level: 5, title: "Detetive do Inglês", xpNeeded: 1000 },
+      { level: 6, title: "Super Falante", xpNeeded: 1400 },
+      { level: 7, title: "Campeão das Galáxias", xpNeeded: 1900 },
+      { level: 8, title: "Poliglota Mirim", xpNeeded: 2500 },
+      { level: 9, title: "Mestre Supremo", xpNeeded: 3200 },
+      { level: 10, title: "Lenda Viva do Inglês 👑", xpNeeded: 4000 }
+    ];
+
+    let player = {
+      level: 1,
+      xp: 0,
+      stars: 0,
+      streak: 1,
+      completedMissions: [],
+      unlockedBadges: []
+    };
+
+    function loadPlayerData() {
+      try {
+        const saved = localStorage.getItem('talkie_hero_player_v3');
+        if (saved) player = JSON.parse(saved);
+      } catch (e) {}
+      updatePlayerUI();
+    }
+
+    function savePlayerData() {
+      try {
+        localStorage.setItem('talkie_hero_player_v3', JSON.stringify(player));
+      } catch (e) {}
+      updatePlayerUI();
+    }
+
+    function addXP(amount) {
+      player.xp += amount;
+      const currentRank = getRank(player.level);
+      const nextRank = getRank(player.level + 1);
+      if (nextRank && player.xp >= currentRank.xpNeeded) {
+        player.level += 1;
+        triggerLevelUp(player.level);
+      }
+      savePlayerData();
+    }
+
+    function getRank(lvl) {
+      return RANKS.find(r => r.level === lvl) || RANKS[RANKS.length - 1];
+    }
+
+    function updatePlayerUI() {
+      const currentRank = getRank(player.level);
+      const prevRank = getRank(player.level - 1);
+      const baseXP = player.level === 1 ? 0 : prevRank.xpNeeded;
+      const targetXP = currentRank.xpNeeded;
+      const currentLevelXP = Math.max(0, player.xp - baseXP);
+      const neededForLevel = targetXP - baseXP;
+      const progressPercent = Math.min(100, (currentLevelXP / neededForLevel) * 100);
+
+      document.getElementById('player-rank-badge').textContent = `Nível ${player.level}`;
+      document.getElementById('player-title').textContent = currentRank.title;
+      document.getElementById('star-count').textContent = player.stars;
+      document.getElementById('trophy-count').textContent = `${player.unlockedBadges.length}/12`;
+      document.getElementById('player-xp-bar').style.width = `${progressPercent}%`;
+      document.getElementById('player-xp-text').textContent = `${player.xp} / ${targetXP} XP`;
+    }
+
+    function triggerLevelUp(newLevel) {
+      playLevelUpSound();
+      const rank = getRank(newLevel);
+      document.getElementById('modal-level-title').textContent = `NÍVEL ${newLevel}`;
+      document.getElementById('modal-level-rank').textContent = `Novo Título: ${rank.title}`;
+      document.getElementById('level-up-modal').classList.remove('hidden');
+    }
+
+    function closeLevelUpModal() {
+      playClickSound();
+      document.getElementById('level-up-modal').classList.add('hidden');
+    }
+
+    let audioCtx = null;
+    function getAudioContext() {
+      if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      if (audioCtx.state === 'suspended') audioCtx.resume();
+      return audioCtx;
+    }
+
+    function playTone(freq, type, duration, delay = 0) {
+      try {
+        const ctx = getAudioContext();
+        setTimeout(() => {
+          const osc = ctx.createOscillator();
+          const gain = ctx.createGain();
+          osc.type = type;
+          osc.frequency.setValueAtTime(freq, ctx.currentTime);
+          gain.gain.setValueAtTime(0.15, ctx.currentTime);
+          gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + duration);
+          osc.connect(gain);
+          gain.connect(ctx.destination);
+          osc.start();
+          osc.stop(ctx.currentTime + duration);
+        }, delay);
+      } catch (e) {}
+    }
+
+    function playSuccessSound() {
+      playTone(523.25, 'triangle', 0.15, 0);
+      playTone(659.25, 'triangle', 0.15, 100);
+      playTone(783.99, 'triangle', 0.25, 200);
+      playTone(1046.50, 'triangle', 0.4, 300);
+    }
+
+    function playLevelUpSound() {
+      playTone(440, 'triangle', 0.15, 0);
+      playTone(554.37, 'triangle', 0.15, 120);
+      playTone(659.25, 'triangle', 0.15, 240);
+      playTone(880, 'triangle', 0.4, 360);
+      playTone(1108.73, 'triangle', 0.5, 500);
+    }
+
+    function playClickSound() { playTone(440, 'sine', 0.08, 0); }
+    function playErrorSound() { playTone(300, 'sawtooth', 0.15, 0); playTone(240, 'sawtooth', 0.25, 120); }
+
+    let speechSpeed = 1.0;
+    function toggleAudioSpeed() {
+      speechSpeed = speechSpeed === 1.0 ? 0.75 : 1.0;
+      document.getElementById('btn-speed').innerHTML = speechSpeed === 1.0 ? '<span>🐰</span> 1x' : '<span>🐢</span> 0.75x';
+      playClickSound();
+    }
+
+    function speakText(text, onEnd) {
+      if (!('speechSynthesis' in window)) return;
+      window.speechSynthesis.cancel();
+      const utterance = new SpeechSynthesisUtterance(text);
+      utterance.lang = 'en-US';
+      utterance.rate = speechSpeed;
+      utterance.pitch = 1.15;
+      if (onEnd) utterance.onend = onEnd;
+      window.speechSynthesis.speak(utterance);
+    }
+
+    let recognition = null;
+    let isListening = false;
+    let inputMode = 'voice';
+
+    function initSpeechRecognition() {
+      const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+      if (!SpeechRecognition) return null;
+      const rec = new SpeechRecognition();
+      rec.lang = 'en-US';
+      rec.continuous = false;
+      rec.interimResults = false;
+      rec.onstart = () => { isListening = true; updateMicButtonUI(); };
+      rec.onresult = (event) => handleSpokenAnswer(event.results[0][0].transcript);
+      rec.onerror = () => { isListening = false; updateMicButtonUI(); setInputMode('tiles'); };
+      rec.onend = () => { isListening = false; updateMicButtonUI(); };
+      return rec;
+    }
+
+    function toggleSpeechRecognition() {
+      getAudioContext();
+      if (!recognition) recognition = initSpeechRecognition();
+      if (!recognition) { setInputMode('tiles'); return; }
+      if (isListening) recognition.stop();
+      else try { recognition.start(); } catch (e) {}
+    }
+
+    function updateMicButtonUI() {
+      const btn = document.getElementById('btn-mic');
+      const label = document.getElementById('mic-status-label');
+      const instruction = document.getElementById('mic-instruction');
+      if (isListening) {
+        btn.classList.add('listening-pulse');
+        label.textContent = "Ouvindo...";
+        instruction.textContent = "Fale agora em inglês!";
+        instruction.classList.add('text-red-400');
+      } else {
+        btn.classList.remove('listening-pulse');
+        label.textContent = "Aperte";
+        instruction.textContent = "Toque no microfone e fale a frase acima!";
+        instruction.classList.remove('text-red-400');
+      }
+    }
+
+    function toggleInputMode() { setInputMode(inputMode === 'voice' ? 'tiles' : 'voice'); }
+    function setInputMode(mode) {
+      inputMode = mode;
+      document.getElementById('voice-input-container').classList.toggle('hidden', mode !== 'voice');
+      document.getElementById('choice-tiles-container').classList.toggle('hidden', mode === 'voice');
+      document.getElementById('toggle-input-mode-btn').textContent = mode === 'voice' ? "Mudar para modo Toque 👆" : "Mudar para modo Voz 🎙️";
+    }
+
+    let selectedWorldId = 1;
+    let currentMission = null;
+    let currentStepIndex = 0;
+
+    function selectWorld(worldId) {
+      selectedWorldId = worldId;
+      playClickSound();
+      [1, 2, 3].forEach(id => {
+        const tab = document.getElementById(`tab-world-${id}`);
+        tab.className = id === worldId
+          ? "flex-1 py-2 rounded-xl transition text-center bg-[#27272a] text-amber-400 shadow-sm border border-[#3f3f46]"
+          : "flex-1 py-2 rounded-xl transition text-center text-zinc-400 hover:bg-[#27272a]";
+      });
+      renderWorldMissions();
+    }
+
+    function renderWorldMissions() {
+      const world = WORLDS[selectedWorldId];
+      document.getElementById('world-title-label').innerHTML = world.title;
+      document.getElementById('world-desc-label').textContent = world.desc;
+
+      const completedInWorld = world.missions.filter(m => player.completedMissions.includes(m.id)).length;
+      document.getElementById('world-progress-label').textContent = `${completedInWorld} / ${world.missions.length} Concluídas`;
+
+      const listEl = document.getElementById('missions-list');
+      listEl.innerHTML = '';
+
+      world.missions.forEach((m) => {
+        const isCompleted = player.completedMissions.includes(m.id);
+        const card = document.createElement('div');
+
+        card.className = "bg-[#18181b] border border-[#27272a] hover:border-amber-500/50 rounded-2xl p-3.5 shadow-md transition active:scale-[0.98] cursor-pointer flex items-center justify-between";
+        card.onclick = () => startMission(m);
+
+        card.innerHTML = `
+          <div class="flex items-center gap-3">
+            <div class="w-12 h-12 rounded-2xl bg-gradient-to-tr ${m.bgGradient} flex items-center justify-center text-2xl shadow-md text-white border border-white/10">
+              ${m.icon}
+            </div>
+            <div>
+              <div class="flex items-center gap-1.5">
+                <h4 class="font-black text-zinc-100 text-sm leading-tight">${m.title}</h4>
+                ${isCompleted ? '<span class="text-xs">⭐ Concluída</span>' : ''}
+              </div>
+              <p class="text-[11px] text-zinc-400 font-semibold mt-0.5">Amigo: ${m.npcAvatar} ${m.npcName}</p>
+              <div class="flex items-center gap-1.5 mt-0.5 text-[10px] font-bold text-amber-400">
+                <span>🏅 ${m.badge}</span>
+                <span class="text-zinc-600">•</span>
+                <span class="text-emerald-400">+150 XP</span>
+              </div>
+            </div>
+          </div>
+          <div class="text-amber-400 font-black text-lg">➔</div>
+        `;
+
+        listEl.appendChild(card);
+      });
+    }
+
+    function startMission(mission) {
+      getAudioContext();
+      playClickSound();
+      currentMission = mission;
+      currentStepIndex = 0;
+      document.getElementById('screen-home').classList.add('hidden');
+      document.getElementById('screen-dialogue').classList.remove('hidden');
+      document.getElementById('screen-celebration').classList.add('hidden');
+      loadStep();
+    }
+
+    function startDailyChallenge() {
+      const allMissions = [...WORLDS[1].missions, ...WORLDS[2].missions, ...WORLDS[3].missions];
+      startMission(allMissions[Math.floor(Math.random() * allMissions.length)]);
+    }
+
+    function loadStep() {
+      const step = currentMission.steps[currentStepIndex];
+      document.getElementById('mission-title-label').textContent = currentMission.title;
+      document.getElementById('step-counter').textContent = `Passo ${currentStepIndex + 1} de ${currentMission.steps.length}`;
+      document.getElementById('mission-progress-bar').style.width = `${((currentStepIndex) / currentMission.steps.length) * 100}%`;
+      document.getElementById('char-avatar').textContent = currentMission.npcAvatar;
+      document.getElementById('char-name').textContent = currentMission.npcName;
+      
+      renderNpcWords(step.npcEn);
+      document.getElementById('npc-text-pt').textContent = `"${step.npcPt}"`;
+      document.getElementById('target-phrase-text').textContent = `"${step.targetEn}"`;
+      document.getElementById('target-phrase-pt').textContent = `(${step.targetPt})`;
+
+      renderChoiceTiles(step.choices);
+      hideFeedback();
+      setTimeout(speakCurrentNpcLine, 350);
+    }
+
+    function renderNpcWords(sentence) {
+      const container = document.getElementById('npc-text-en');
+      container.innerHTML = '';
+      sentence.split(' ').forEach(rawWord => {
+        const cleanWord = rawWord.toLowerCase().replace(/[^a-z]/g, '');
+        const span = document.createElement('span');
+        span.className = "inline-block px-1 py-0.5 rounded-lg hover:bg-[#27272a] text-zinc-100 cursor-pointer border border-transparent hover:border-[#3f3f46]";
+        span.textContent = rawWord;
+        span.onclick = (e) => { e.stopPropagation(); openWordModal(cleanWord, rawWord); };
+        container.appendChild(span);
+      });
+    }
+
+    function renderChoiceTiles(choices) {
+      const container = document.getElementById('choices-list');
+      container.innerHTML = '';
+      choices.forEach(ch => {
+        const btn = document.createElement('button');
+        btn.className = "w-full text-left bg-[#18181b] border border-[#27272a] hover:border-amber-500/50 p-3 rounded-xl transition shadow-sm active:scale-[0.98] flex flex-col";
+        btn.onclick = () => handleTileChoice(ch);
+        btn.innerHTML = `<span class="font-extrabold text-white text-sm">${ch.en}</span>` +
+          `<span class="text-xs text-amber-400 font-medium mt-0.5">${ch.pt}</span>`;
+        container.appendChild(btn);
+      });
+    }
+
+    function speakCurrentNpcLine() { speakText(currentMission.steps[currentStepIndex].npcEn); }
+    function speakTargetPhrase() { speakText(currentMission.steps[currentStepIndex].targetEn); }
+
+    function handleSpokenAnswer(spokenText) {
+      const step = currentMission.steps[currentStepIndex];
+      const target = step.targetEn.toLowerCase().replace(/[^a-z0-9]/g, '');
+      const spoken = spokenText.toLowerCase().replace(/[^a-z0-9]/g, '');
+      const isMatch = checkFuzzyMatch(spoken, target);
+
+      if (isMatch) {
+        showFeedback(true, `Você disse: "${spokenText}"! Maravilhoso (+50 XP)! ⭐`);
+        addXP(50);
+        onStepSuccess();
+      } else {
+        playErrorSound();
+        showFeedback(false, `Você disse: "${spokenText}". Vamos tentar de novo?`);
+      }
+    }
+
+    function checkFuzzyMatch(spoken, target) {
+      if (spoken === target || spoken.includes(target) || target.includes(spoken)) return true;
+      let matches = 0;
+      for (let char of spoken) {
+        if (target.includes(char)) matches++;
+      }
+      return (matches / target.length) > 0.60;
+    }
+
+    function handleTileChoice(choice) {
+      if (choice.correct) {
+        speakText(choice.en, () => {
+          showFeedback(true, "Resposta perfeita! Muito bem! (+25 XP) ⭐");
+          addXP(25);
+          onStepSuccess();
+        });
+      } else {
+        playErrorSound();
+        showFeedback(false, "Essa opção não combina com a conversa. Tente a outra!");
+      }
+    }
+
+    function onStepSuccess() {
+      playSuccessSound();
+      player.stars += 1;
+      savePlayerData();
+      setTimeout(() => {
+        currentStepIndex++;
+        if (currentStepIndex >= currentMission.steps.length) showCelebration();
+        else loadStep();
+      }, 1500);
+    }
+
+    function showCelebration() {
+      document.getElementById('screen-dialogue').classList.add('hidden');
+      document.getElementById('screen-celebration').classList.remove('hidden');
+
+      const isFirstTime = !player.completedMissions.includes(currentMission.id);
+      if (isFirstTime) player.completedMissions.push(currentMission.id);
+      if (!player.unlockedBadges.includes(currentMission.badge)) player.unlockedBadges.push(currentMission.badge);
+
+      const totalBonusXP = isFirstTime ? 150 : 80;
+      addXP(totalBonusXP);
+
+      document.getElementById('earned-xp-amount').textContent = `+${totalBonusXP} XP`;
+      document.getElementById('earned-badge-name').textContent = currentMission.badge;
+      savePlayerData();
+      playSuccessSound();
+      speakText("Congratulations! Mission accomplished! You are getting stronger!");
+    }
+
+    function goHome() {
+      if (isListening && recognition) recognition.stop();
+      document.getElementById('screen-home').classList.remove('hidden');
+      document.getElementById('screen-dialogue').classList.add('hidden');
+      document.getElementById('screen-celebration').classList.add('hidden');
+      renderWorldMissions();
+      updatePlayerUI();
+    }
+
+    function showFeedback(isSuccess, message) {
+      const box = document.getElementById('feedback-box');
+      box.className = "text-center py-2 px-3 rounded-xl text-xs font-bold my-1 transition " +
+        (isSuccess ? "bg-emerald-950/80 text-emerald-300 border border-emerald-500/40" : "bg-rose-950/80 text-rose-300 border border-rose-500/40");
+      document.getElementById('feedback-text').textContent = message;
+    }
+
+    function hideFeedback() { document.getElementById('feedback-box').className = "hidden"; }
+
+    function openTrophiesModal() {
+      playClickSound();
+      const grid = document.getElementById('trophies-grid');
+      grid.innerHTML = '';
+      const allMissions = [...WORLDS[1].missions, ...WORLDS[2].missions, ...WORLDS[3].missions];
+
+      allMissions.forEach(m => {
+        const isUnlocked = player.unlockedBadges.includes(m.badge);
+        const item = document.createElement('div');
+        if (isUnlocked) {
+          item.className = "bg-[#27272a] border border-amber-500/40 p-2.5 rounded-xl flex items-center gap-2 text-left";
+          item.innerHTML = `<span class="text-2xl">${m.icon}</span><div class="overflow-hidden"><div class="text-[11px] font-black text-amber-400 truncate">${m.badge}</div><div class="text-[9px] text-emerald-400 font-bold">Conquistado! ⭐</div></div>`;
+        } else {
+          item.className = "bg-[#18181b] border border-[#27272a] p-2.5 rounded-xl flex items-center gap-2 opacity-50 text-left";
+          item.innerHTML = `<span class="text-2xl filter grayscale">🔒</span><div class="overflow-hidden"><div class="text-[11px] font-bold text-zinc-400 truncate">${m.badge}</div><div class="text-[9px] text-zinc-500">Em breve</div></div>`;
+        }
+        grid.appendChild(item);
+      });
+      document.getElementById('trophies-modal').classList.remove('hidden');
+    }
+
+    function closeTrophiesModal() { playClickSound(); document.getElementById('trophies-modal').classList.add('hidden'); }
+
+    let activeModalWord = "";
+    function openWordModal(cleanWord, rawWord) {
+      activeModalWord = cleanWord;
+      document.getElementById('modal-word-en').textContent = rawWord;
+      document.getElementById('modal-word-pt').textContent = `Tradução: ${VOCAB[cleanWord] || "Palavra em inglês"}`;
+      document.getElementById('word-modal').classList.remove('hidden');
+      speakText(cleanWord);
+    }
+
+    function speakModalWord() { if (activeModalWord) speakText(activeModalWord); }
+    function closeWordModal() { document.getElementById('word-modal').classList.add('hidden'); }
+
+    window.onload = () => {
+      loadPlayerData();
+      renderWorldMissions();
+      setInputMode('voice');
+    };
+  </script>
+</body>
+</html>
