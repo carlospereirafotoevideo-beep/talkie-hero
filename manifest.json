@@ -1,0 +1,18 @@
+{
+  "name": "TalkieHero Dark: Missões em Inglês",
+  "short_name": "TalkieHero",
+  "description": "Jogo interativo de conversação em inglês para crianças no Android",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#121214",
+  "theme_color": "#18181b",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "https://cdn-icons-png.flaticon.com/512/3069/3069172.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}
